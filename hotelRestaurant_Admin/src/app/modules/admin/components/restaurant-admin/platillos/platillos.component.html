@@ -1,0 +1,98 @@
+<div class="p-8 bg-gray-50 min-h-screen">
+  <!-- Encabezado -->
+  <div class="flex justify-between items-center mb-6 p-4 bg-white rounded-xl shadow-md">
+    <h2 class="text-3xl font-bold text-gray-800">Administrar Platillos</h2>
+    <button
+      (click)="openCreateModal()"
+      class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+      + Nuevo Platillo
+    </button>
+  </div>
+
+  <!-- Loading -->
+  @if (loading) {
+    <div class="text-gray-500 text-center p-6">Cargando platillos...</div>
+  }
+
+  <!-- Lista -->
+  @if (!loading && dishes.length > 0) {
+    <div class="overflow-x-auto bg-white rounded-xl shadow-md">
+      <table class="w-full border-collapse">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="p-3 text-left text-gray-600">Nombre</th>
+            <th class="p-3 text-left text-gray-600">Descripción</th>
+            <th class="p-3 text-left text-gray-600">Precio</th>
+            <th class="p-3 text-left text-gray-600">Restaurante</th>
+            <th class="p-3 text-center text-gray-600">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of dishes" class="border-t hover:bg-gray-50">
+            <td class="p-3 font-medium text-gray-800">{{ d.name }}</td>
+            <td class="p-3 text-gray-600">{{ d.description }}</td>
+            <td class="p-3 text-gray-600">{{ d.price | currency:'Q' }}</td>
+            <td class="p-3 text-gray-600">{{ d.restaurantName }}</td>
+            <td class="p-3 text-center flex justify-center gap-2">
+              <button
+                (click)="openEditModal(d)"
+                class="px-3 py-1 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">
+                Editar
+              </button>
+              <button
+                (click)="deleteDish(d.id)"
+                class="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- Vacio -->
+  @if (!loading && dishes.length === 0) {
+    <div class="text-gray-500 text-center p-6">No hay platillos registrados.</div>
+  }
+
+  <!-- Modal -->
+  @if (showModal) {
+    <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg mx-4 relative">
+        <h3 class="text-2xl font-bold mb-4 text-gray-800">
+          {{ isEditing ? 'Editar Platillo' : 'Nuevo Platillo' }}
+        </h3>
+
+        <form class="space-y-4">
+          <input [(ngModel)]="selectedDish.name" name="name" placeholder="Nombre"
+            class="w-full border rounded p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+
+          <textarea [(ngModel)]="selectedDish.description" name="description" placeholder="Descripción"
+            class="w-full border rounded p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+
+          <input type="number" [(ngModel)]="selectedDish.price" name="price" placeholder="Precio"
+            class="w-full border rounded p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+
+          <!-- Select de restaurantes -->
+          <select [(ngModel)]="selectedDish.restaurantId" name="restaurantId"
+            class="w-full border rounded p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            <option [ngValue]="null">Seleccione un restaurante</option>
+            <option *ngFor="let r of restaurants" [ngValue]="r.id">
+              {{ r.name }}
+            </option>
+          </select>
+        </form>
+
+        <div class="mt-6 flex justify-end gap-2">
+          <button (click)="closeModal()" class="px-5 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">
+            Cancelar
+          </button>
+          <button (click)="saveDish()" class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

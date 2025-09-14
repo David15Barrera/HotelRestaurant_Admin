@@ -1,44 +1,115 @@
-<div class="p-8">
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-7xl mx-auto">
-    
-    <a routerLink="/restaurantes/editar" class="group flex flex-col items-center justify-center p-6 bg-white border border-gray-200 rounded-xl shadow-md transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
-      <div class="p-4 rounded-full bg-blue-50 text-blue-500 transition-colors duration-300 group-hover:bg-blue-100 group-hover:text-blue-600">
-        <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-        </svg>
-      </div>
-      <h3 class="mt-4 text-xl font-bold text-gray-800">Editar Restaurantes</h3>
-      <p class="text-sm text-gray-500 mt-1 text-center">Modifica la información de los restaurantes.</p>
-    </a>
-    
-    <a routerLink="/restaurantes/nuevo" class="group flex flex-col items-center justify-center p-6 bg-white border border-gray-200 rounded-xl shadow-md transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
-      <div class="p-4 rounded-full bg-blue-50 text-blue-500 transition-colors duration-300 group-hover:bg-blue-100 group-hover:text-blue-600">
-        <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M12 4v16m8-8H4"/>
-        </svg>
-      </div>
-      <h3 class="mt-4 text-xl font-bold text-gray-800">Crear Restaurante</h3>
-      <p class="text-sm text-gray-500 mt-1 text-center">Agrega un nuevo restaurante al sistema.</p>
-    </a>
-
-    <a routerLink="/restaurantes/editar-id" class="group flex flex-col items-center justify-center p-6 bg-white border border-gray-200 rounded-xl shadow-md transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
-      <div class="p-4 rounded-full bg-blue-50 text-blue-500 transition-colors duration-300 group-hover:bg-blue-100 group-hover:text-blue-600">
-        <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7v3m0 3h.01M9 16h6"/>
-        </svg>
-      </div>
-      <h3 class="mt-4 text-xl font-bold text-gray-800">Editar Restaurante</h3>
-      <p class="text-sm text-gray-500 mt-1 text-center">Edita la información de un restaurante específico.</p>
-    </a>
-
-    <a routerLink="/restaurantes/eliminar-id" class="group flex flex-col items-center justify-center p-6 bg-white border border-gray-200 rounded-xl shadow-md transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
-      <div class="p-4 rounded-full bg-red-50 text-red-500 transition-colors duration-300 group-hover:bg-red-100 group-hover:text-red-600">
-        <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M19 7l-.867 12.142A2 2 0 0116.035 21H7.965a2 2 0 01-1.998-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-        </svg>
-      </div>
-      <h3 class="mt-4 text-xl font-bold text-gray-800">Eliminar restaurante</h3>
-      <p class="text-sm text-gray-500 mt-1 text-center">Borra un restaurante del registro.</p>
-    </a>
+<div class="p-8 bg-gray-50 min-h-screen">
+  <!-- Encabezado -->
+  <div class="flex justify-between items-center mb-6 p-4 bg-white rounded-xl shadow-md">
+    <h2 class="text-3xl font-bold text-gray-800">Administrar Restaurantes</h2>
+    <button
+      (click)="openCreateModal()"
+      class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+      + Nuevo Restaurante
+    </button>
   </div>
+
+  <!-- Loading -->
+  @if (loading) {
+    <div class="text-gray-500 text-center p-6">Cargando restaurantes...</div>
+  }
+
+  <!-- Lista -->
+  @if (!loading && restaurants.length > 0) {
+    <div class="overflow-x-auto bg-white rounded-xl shadow-md">
+      <table class="w-full border-collapse">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="p-3 text-left text-gray-600">Nombre</th>
+            <th class="p-3 text-left text-gray-600">Hotel</th>
+            <th class="p-3 text-left text-gray-600">Teléfono</th>
+            <th class="p-3 text-left text-gray-600">Capacidad</th>
+            <th class="p-3 text-left text-gray-600">Horario</th>
+            <th class="p-3 text-center text-gray-600">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of restaurants" class="border-t hover:bg-gray-50">
+            <td class="p-3 font-medium text-gray-800">{{ r.name }}</td>
+            <td class="p-3 text-gray-600">{{ r.hotelName || 'Sin asignar' }}</td>
+            <td class="p-3 text-gray-600">{{ r.phone }}</td>
+            <td class="p-3 text-gray-600">{{ r.capacity }}</td>
+            <td class="p-3 text-gray-600">
+                  {{ r.openingTime }} - {{ r.closingTime }}
+            </td>
+            <td class="p-3 text-center flex justify-center gap-2">
+              <button
+                (click)="openEditModal(r)"
+                class="px-3 py-1 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">
+                Editar
+              </button>
+              <button
+                (click)="deleteRestaurant(r.id)"
+                class="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- Vacio -->
+  @if (!loading && restaurants.length === 0) {
+    <div class="text-gray-500 text-center p-6">No hay restaurantes registrados.</div>
+  }
+
+  <!-- Modal -->
+  @if (showModal) {
+    <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg mx-4 relative">
+        <h3 class="text-2xl font-bold mb-4 text-gray-800">
+          {{ isEditing ? 'Editar Restaurante' : 'Nuevo Restaurante' }}
+        </h3>
+        
+        <form class="space-y-4">
+          <input [(ngModel)]="selectedRestaurant.name" name="name" placeholder="Nombre"
+            class="w-full border rounded p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+
+          <!-- Hotel ID -->
+        <select
+          [(ngModel)]="selectedRestaurant.hotelId"
+          name="hotelId"
+          class="w-full border rounded p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option [ngValue]="null">Sin hotel</option>
+          <option *ngFor="let h of hotels" [ngValue]="h.id">
+            {{ h.name }}
+          </option>
+        </select>
+        
+          <input [(ngModel)]="selectedRestaurant.address" name="address" placeholder="Dirección"
+            class="w-full border rounded p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+
+          <input [(ngModel)]="selectedRestaurant.phone" name="phone" placeholder="Teléfono"
+            class="w-full border rounded p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+
+          <input type="number" [(ngModel)]="selectedRestaurant.capacity" name="capacity" placeholder="Capacidad"
+            class="w-full border rounded p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+
+          <div class="flex gap-2">
+            <input type="time" [(ngModel)]="selectedRestaurant.openingTime" name="openingTime"
+              class="w-full border rounded p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <input type="time" [(ngModel)]="selectedRestaurant.closingTime" name="closingTime"
+              class="w-full border rounded p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+        </form>
+
+        <div class="mt-6 flex justify-end gap-2">
+          <button (click)="closeModal()" class="px-5 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">
+            Cancelar
+          </button>
+          <button (click)="saveRestaurant()" class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 </div>

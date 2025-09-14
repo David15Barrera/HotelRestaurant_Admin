@@ -56,6 +56,24 @@ export const ADMIN_ROUTES: Routes = [
          import('./components/restaurant-admin/restauinicio/restauinicio.component').then(
             (m) => m.RestauinicioComponent
           ),
+      },
+      {
+        path:'menu',
+        loadComponent: () => import('./components/restaurant-admin/platillos/platillos.component').then(
+          (m) => m.PlatillosComponent
+        ) 
+      },
+      {
+        path:'ordenes',
+        loadComponent: () => import('./components/restaurant-admin/ordenes/ordenes.component').then(
+          (m) => m.OrdenesComponent
+        ) 
+      },
+      {
+        path:'ordenes-admin/:id',
+        loadComponent: () => import('./components/restaurant-admin/ordens-detail/ordens-detail.component').then(
+          (m) => m.OrdensDetailComponent
+        )
       }
       // {
       //   path: 'menu',

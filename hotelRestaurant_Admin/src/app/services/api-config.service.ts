@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { environments, environmetsHotel, environmentRest, environmentProm, environmentReviw } from '../../environments/environment';
+import { environments, environmetsHotel, environmentRest, environmentProm, environmentReviw, environmentfinan } from '../../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
@@ -10,6 +10,7 @@ export class ApiConfigService {
   API_RESTABASE = environmentRest.API_URL;
   API_PROMOTBASE = environmentProm.API_URL;
   API_REVIEWBASE = environmentReviw.API_URL;
+  API_FINANBASE = environmentfinan.API_URL;
   // AUTH
   API_AUTH = `${this.API_BASE}/v1/auth`;
   API_EMPLOYEE = `${this.API_BASE}/v1/employee`;
@@ -31,5 +32,9 @@ export class ApiConfigService {
 
   //Reviews
   API_REVIEWS = `${this.API_REVIEWBASE}/v1/reviews`;
-
+  
+  //Finance
+  API_PAY = `${this.API_FINANBASE}/api/v1/payment-employees`;
+  API_BILLS = `${this.API_FINANBASE}/api/v1/bills`;
+  API_REPORT = `${this.API_FINANBASE}/api/v1/reports/weekly-closure`;
 }

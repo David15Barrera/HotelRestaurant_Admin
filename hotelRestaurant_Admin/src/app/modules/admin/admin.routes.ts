@@ -74,15 +74,39 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () => import('./components/restaurant-admin/ordens-detail/ordens-detail.component').then(
           (m) => m.OrdensDetailComponent
         )
+      },
+       {
+         path: 'reportes',
+         loadComponent: () =>
+           import('./components/reportes/reportes.component').then(
+             (m) => m.ReportesComponent
+           ),
+      },
+      {
+        path:'reviws-resta',
+        loadComponent: () =>
+          import('./components/hotel-admin/reviews-hot/reviews-hot.component').then(
+            (m) => m.ReviewsHotComponent
+          )
+      },
+      {
+        path:'reviws-hotel',
+        loadComponent: () => import('./components/restaurant-admin/reviewsad/reviewsad.component').then(
+          (m) => m.ReviewsadComponent
+        )
+      },
+      {
+        path:'pagos',
+        loadComponent: () => import('./components/empleado/pago/pago.component').then(
+          (m) => m.PagoComponent
+        )
+      },
+      {
+        path:'promotions-admon',
+        loadComponent: () => import('./components/promotions-admin/promotions-admin.component').then(
+          (m) => m.PromotionsAdminComponent       
+        )
       }
-      // {
-      //   path: 'menu',
-      //   loadComponent: () =>
-      //     import('./components/restaurantes/crud-menu/crud-menu.component').then(
-      //       (m) => m.CrudMenuComponent
-      //     ),
-      // },
-      // ... y así sucesivamente para todas las rutas que no se usarán por ahora.
     ],
   },
 ];

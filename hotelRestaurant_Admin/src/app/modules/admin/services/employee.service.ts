@@ -14,10 +14,15 @@ export class EmployeeService {
 
   createEmployee(employee: Employee): Observable<Employee> {
     return this.http.post<Employee>(`${this.apiConfig.API_EMPLOYEE}s`, employee); 
-    // Ojo: según tu API docs es /v1/employees (plural)
   }
 
   getEmployeesNoManager(): Observable<Employee[]> {
     return this.http.get<Employee[]>(`${this.apiConfig.API_EMPLOYEE}s`);
   }
+
+     // Obtener por id
+     getById(id: number): Observable<Employee> {
+       return this.http.get<Employee>(`${this.apiConfig.API_EMPLOYEE}s/${id}`);
+     }
+   
 }

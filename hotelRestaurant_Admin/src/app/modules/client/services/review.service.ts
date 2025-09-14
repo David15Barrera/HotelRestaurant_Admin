@@ -36,4 +36,9 @@ export class ReviewService {
   getByDish(dishId: string): Observable<Review[]> {
     return this.http.get<Review[]>(`${this.API}/dishes/${dishId}`);
   }
+
+  deleteReview(id: string): Observable<void> {
+  return this.http.delete<void>(`${this.API}/${id}`);
+}
+
 }

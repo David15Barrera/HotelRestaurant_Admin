@@ -1,0 +1,66 @@
+<div class="p-6 space-y-6">
+  <h2 class="text-2xl font-bold text-gray-800">Opiniones de Hoteles / Habitaciones</h2>
+
+  <!-- Filtros -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- Selector de hotel -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Hotel</label>
+      <select [(ngModel)]="selectedHotelId" 
+              (change)="loadRooms(); loadReviews()"
+              class="w-full border rounded p-2 text-gray-700">
+        <option [ngValue]="null">Seleccione un hotel</option>
+        <option *ngFor="let h of hotels" [ngValue]="h.id">
+          {{ h.name }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Selector de habitación -->
+    <div *ngIf="rooms.length > 0">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Habitación</label>
+      <select [(ngModel)]="selectedRoomId" 
+              (change)="loadReviews()"
+              class="w-full border rounded p-2 text-gray-700">
+        <option [ngValue]="null">Todas las habitaciones (opiniones del hotel)</option>
+        <option *ngFor="let r of rooms" [ngValue]="r.id">
+          Habitación {{ r.roomNumber }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Estado de carga -->
+  <div *ngIf="loading" class="text-gray-500">Cargando opiniones...</div>
+
+  <!-- Lista de reviews -->
+  <div *ngIf="!loading && reviews.length > 0; else noReviews" class="space-y-4 mt-4">
+    <div *ngFor="let review of reviews"
+         class="p-4 border rounded-lg shadow-sm bg-white">
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="text-lg font-semibold text-gray-800">
+            {{ review.customerName || 'Cliente desconocido' }}
+          </h3>
+          <p class="text-sm text-gray-600">
+            {{ review.comment }}
+          </p>
+          <p class="text-sm text-yellow-600 font-medium">
+            ⭐ {{ review.rating }}/5
+          </p>
+          <p class="text-xs text-gray-500">
+            {{ review.createdAt | date:'short' }}
+          </p>
+        </div>
+        <button (click)="deleteReview(review.id)"
+                class="text-red-600 hover:text-red-800">
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noReviews>
+    <p class="text-gray-500 text-center mt-6">No hay opiniones disponibles.</p>
+  </ng-template>
+</div>

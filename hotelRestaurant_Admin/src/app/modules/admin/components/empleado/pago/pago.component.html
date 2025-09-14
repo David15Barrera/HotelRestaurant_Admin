@@ -1,0 +1,143 @@
+<div class="p-6">
+  <h2 class="text-2xl font-bold mb-4 text-gray-800">Pagos a Empleados</h2>
+
+  <!-- Bloque de filtros -->
+  <div class="mb-4 flex flex-col md:flex-row md:items-end md:space-x-4 space-y-2 md:space-y-0">
+    <div class="flex-1">
+      <label class="block text-gray-700 mb-1">Buscar por Nombre</label>
+      <input type="text" [(ngModel)]="filterName"
+        placeholder="Nombre del empleado"
+        class="w-full border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    </div>
+
+    <div>
+      <label class="block text-gray-700 mb-1">Fecha Inicio</label>
+      <input type="date" [(ngModel)]="filterStartDate"
+        class="border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    </div>
+
+    <div>
+      <label class="block text-gray-700 mb-1">Fecha Fin</label>
+      <input type="date" [(ngModel)]="filterEndDate"
+        class="border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    </div>
+
+    <div class="mt-2 md:mt-0">
+      <button (click)="loadPayments()"
+        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+        Aplicar Filtros
+      </button>
+      <button (click)="filterName=''; filterStartDate=''; filterEndDate=''; loadPayments()"
+        class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 ml-2">
+        Limpiar
+      </button>
+    </div>
+  </div>
+
+  <!-- Botón de crear pago -->
+  <div class="mb-4 flex justify-end">
+    <button (click)="openCreate()"
+      class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+      Nuevo Pago
+    </button>
+  </div>
+
+  <!-- Tabla de pagos -->
+  <div *ngIf="loading" class="text-gray-500">Cargando pagos...</div>
+
+  <table *ngIf="!loading && filteredPayments.length > 0"
+    class="w-full border border-gray-300 rounded-lg overflow-hidden">
+    <thead class="bg-gray-100 text-left">
+      <tr>
+        <th class="p-2">Empleado</th>
+        <th class="p-2">Monto</th>
+        <th class="p-2">Inicio</th>
+        <th class="p-2">Fin</th>
+        <th class="p-2">Fecha de Pago</th>
+        <th class="p-2">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of filteredPayments" class="border-t">
+        <td class="p-2">{{ getEmployeeName(p.employeeId) }}</td>
+        <td class="p-2">{{ p.amount | currency:'Q' }}</td>
+        <td class="p-2">{{ p.startDate }}</td>
+        <td class="p-2">{{ p.endDate }}</td>
+        <td class="p-2">{{ p.paymentDate | date:'short' }}</td>
+        <td class="p-2 flex gap-2">
+          <button (click)="openEdit(p)" class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">
+            Editar
+          </button>
+          <button (click)="deletePayment(p.id)" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">
+            Eliminar
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && filteredPayments.length === 0" class="text-gray-500 mt-4">
+    No hay pagos registrados para los filtros aplicados.
+  </div>
+</div>
+
+<!-- Modal de creación/edición -->
+<div *ngIf="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+  <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg mx-4 relative">
+    <h3 class="text-2xl font-bold mb-4 text-gray-800">
+      {{ isEditing ? 'Editar Pago' : 'Nuevo Pago' }}
+    </h3>
+
+    <div class="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
+      <div class="flex-1 space-y-4">
+        <div>
+          <label class="block text-gray-700">Empleado</label>
+          <select [(ngModel)]="selectedPayment.employeeId" name="employeeId"
+            (change)="onEmployeeChange(selectedPayment.employeeId)"
+            class="w-full border rounded p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            <option value="">Seleccione un empleado</option>
+            <option *ngFor="let e of employees" [value]="e.id">
+              {{ e.fullName }} ({{ e.jobPosition }})
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-gray-700">Monto (salario semanal)</label>
+          <input type="number" [(ngModel)]="selectedPayment.amount" name="amount"
+            class="w-full border rounded p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" readonly />
+        </div>
+      </div>
+
+      <div class="flex-1 space-y-4">
+        <div>
+          <label class="block text-gray-700">Fecha Inicio</label>
+          <input type="date" [(ngModel)]="selectedPayment.startDate" name="startDate"
+            (change)="onStartDateChange(selectedPayment.startDate)"
+            class="w-full border rounded p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+
+        <div>
+          <label class="block text-gray-700">Fecha Fin</label>
+          <input type="date" [(ngModel)]="selectedPayment.endDate" name="endDate"
+            class="w-full border rounded p-3 text-gray-700 bg-gray-100" readonly />
+        </div>
+
+        <div>
+          <label class="block text-gray-700">Fecha de Pago</label>
+          <input type="datetime-local" [(ngModel)]="selectedPayment.paymentDate" name="paymentDate"
+            class="w-full border rounded p-3 text-gray-700 bg-gray-100" readonly />
+        </div>
+      </div>
+    </div>
+    
+    <div class="mt-6 flex justify-end gap-2">
+      <button (click)="closeModal()" class="px-5 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400">
+        Cancelar
+      </button>
+      <button (click)="savePayment()" class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+        Guardar
+      </button>
+    </div>
+  </div>
+</div>

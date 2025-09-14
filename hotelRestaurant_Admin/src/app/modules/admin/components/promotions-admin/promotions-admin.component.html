@@ -1,0 +1,150 @@
+<div class="p-6 bg-gray-50 min-h-screen">
+  <h2 class="text-3xl font-bold mb-6 text-gray-800">Administrar Promociones</h2>
+
+  <!-- BOTENES DE POPULARIDAD-->
+  <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div class="flex flex-wrap gap-2 md:gap-4">
+      <button *ngFor="let hotel of hotels" (click)="applyPopularRoomPromotion(hotel.id)"
+              class="px-3 py-1 bg-purple-600 text-white rounded-full text-sm font-medium hover:bg-purple-700 transition-colors duration-200">
+        {{hotel.name}} (Habitación Popular)
+      </button>
+      <button *ngFor="let rest of restaurants" (click)="applyPopularDishPromotion(rest.id)"
+              class="px-3 py-1 bg-green-600 text-white rounded-full text-sm font-medium hover:bg-green-700 transition-colors duration-200">
+        {{rest.name}} (Platillo Popular)
+      </button>
+      <button (click)="applyFrequentCustomerPromotion()"
+              class="px-3 py-1 bg-yellow-500 text-white rounded-full text-sm font-medium hover:bg-yellow-600 transition-colors duration-200">
+        Cliente Frecuente
+      </button>
+    </div>
+    <button (click)="openCreate()" class="px-5 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-200">
+      <i class="fas fa-plus mr-2"></i>Nueva Promoción
+    </button>
+  </div>
+  
+  <div class="overflow-x-auto bg-white rounded-xl shadow-lg">
+                <div class="flex flex-wrap gap-4 mb-4">
+            <input type="text" placeholder="Filtrar por nombre" [(ngModel)]="filterName" 
+                    class="border p-2 rounded focus:ring-blue-500 focus:border-blue-500"/>
+
+            <select [(ngModel)]="filterType" class="border p-2 rounded focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Todos los tipos</option>
+                <option value="Hotel">Hotel</option>
+                <option value="Restaurante">Restaurante</option>
+                <option value="Habitacion">Habitación</option>
+                <option value="Platillo">Platillo</option>
+                <option value="Cliente">Cliente</option>
+            </select>
+
+            <input type="date" placeholder="Fecha inicio" [(ngModel)]="filterStartDate"
+                    class="border p-2 rounded focus:ring-blue-500 focus:border-blue-500"/>
+            <input type="date" placeholder="Fecha fin" [(ngModel)]="filterEndDate"
+                    class="border p-2 rounded focus:ring-blue-500 focus:border-blue-500"/>
+            </div>
+
+    <table *ngIf="!loading && promotions.length > 0" class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="p-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Nombre</th>
+          <th class="p-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Tipo</th>
+          <th class="p-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Descuento</th>
+          <th class="p-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Asignado a</th>
+          <th class="p-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Fechas</th>
+          <th class="p-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+<tr *ngFor="let p of filteredPromotions" class="hover:bg-gray-50 transition-colors duration-150">
+  <td class="p-4 whitespace-nowrap">{{ p.name }}</td>
+  <td class="p-4 whitespace-nowrap">{{ p.type }}</td>
+  <td class="p-4 whitespace-nowrap">{{ p.discountPercentage }}%</td>
+  <td class="p-4 whitespace-nowrap">{{ p.hotel?.name || p.restaurant?.name || p.room?.roomNumber || p.dishId || 'N/A' }}</td>
+  <td class="p-4 whitespace-nowrap text-sm text-gray-500">{{ p.startDate | date: 'shortDate' }} - {{ p.endDate | date: 'shortDate' }}</td>
+  <td class="p-4 flex gap-2">
+    <button (click)="openEdit(p)" class="px-3 py-1 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors duration-200 text-sm">Editar</button>
+    <button (click)="deletePromotion(p.id)" class="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-sm">Eliminar</button>
+  </td>
+</tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="!loading && promotions.length === 0" class="text-center text-gray-500 mt-8 p-6 bg-white rounded-xl shadow-md">
+    <p>No hay promociones registradas en este momento.</p>
+  </div>
+</div>
+
+<div *ngIf="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+  <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-lg mx-4">
+    <h3 class="text-3xl font-bold mb-6 text-gray-800">{{ isEditing ? 'Editar Promoción' : 'Nueva Promoción' }}</h3>
+
+    <form class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-gray-700 font-medium">Nombre</label>
+          <input type="text" [(ngModel)]="selectedPromotion.name" name="name" class="mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" />
+        </div>
+        <div>
+          <label class="block text-gray-700 font-medium">Descuento (%)</label>
+          <input type="number" [(ngModel)]="selectedPromotion.discountPercentage" name="discountPercentage" class="mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" />
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-gray-700 font-medium">Descripción</label>
+          <textarea [(ngModel)]="selectedPromotion.description" name="description" class="mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+        </div>
+        <div>
+          <label class="block text-gray-700 font-medium">Tipo</label>
+          <select [(ngModel)]="selectedPromotion.type" name="type" class="mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="">Seleccione un tipo</option>
+            <option value="hotel">Hotel</option>
+            <option value="restaurant">Restaurante</option>
+            <option value="room">Habitación</option>
+            <option value="dish">Platillo</option>
+            <option value="customer">Cliente</option>
+          </select>
+        </div>
+        <div *ngIf="selectedPromotion.type" class="flex flex-col">
+          <label class="block text-gray-700 font-medium">Asignar a:</label>
+          <select *ngIf="selectedPromotion.type === 'hotel'" [(ngModel)]="selectedPromotion.hotelId" name="hotelId" class="mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="">Seleccione un hotel</option>
+            <option *ngFor="let h of hotels" [value]="h.id">{{ h.name }}</option>
+          </select>
+          <select *ngIf="selectedPromotion.type === 'restaurant'" [(ngModel)]="selectedPromotion.restaurantId" name="restaurantId" class="mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="">Seleccione un restaurante</option>
+            <option *ngFor="let r of restaurants" [value]="r.id">{{ r.name }}</option>
+          </select>
+          <select *ngIf="selectedPromotion.type === 'room'" [(ngModel)]="selectedPromotion.roomId" name="roomId" class="mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="">Seleccione una habitación</option>
+            <option *ngFor="let room of rooms" [value]="room.id">{{ room.roomNumber }}</option>
+          </select>
+          <select *ngIf="selectedPromotion.type === 'dish'" [(ngModel)]="selectedPromotion.dishId" name="dishId" class="mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="">Seleccione un platillo</option>
+            <option *ngFor="let dish of dishes" [value]="dish.id">{{ dish.name }}</option>
+          </select>
+          <select *ngIf="selectedPromotion.type === 'customer'" [(ngModel)]="selectedPromotion.customerId" name="customerId" class="mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="">Seleccione un cliente</option>
+            <option *ngFor="let c of customers" [value]="c.id">{{ c.fullName }}</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-gray-700 font-medium">Fecha Inicio</label>
+          <input type="date" [(ngModel)]="selectedPromotion.startDate" name="startDate" class="mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" />
+        </div>
+        <div>
+          <label class="block text-gray-700 font-medium">Fecha Fin</label>
+          <input type="date" [(ngModel)]="selectedPromotion.endDate" name="endDate" class="mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" />
+        </div>
+      </div>
+    </form>
+
+    <div class="mt-6 flex justify-end gap-3">
+      <button (click)="closeModal()" class="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg font-medium hover:bg-gray-400 transition-colors duration-200">
+        Cancelar
+      </button>
+      <button (click)="savePromotion()" class="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200">
+        Guardar
+      </button>
+    </div>
+  </div>
+</div>

@@ -17,3 +17,7 @@ export const environmentProm = {
 export const environmentReviw = {
         API_URL: 'https://microservice-reviews.onrender.com/api/reviews'
 }
+
+export const environmentfinan = {
+    API_URL: 'https://microservice-finance.onrender.com/api/finance'
+}

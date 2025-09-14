@@ -1,0 +1,33 @@
+<div class="min-h-screen flex items-center justify-center bg-base-200">
+  <div class="card w-full max-w-md bg-base-100 shadow-xl p-6">
+    <div class="text-center mb-6">
+      <h1 class="text-3xl font-bold text-primary">Confirma tu cuenta</h1>
+      <p class="text-base-content/70 mt-2">
+        Hemos enviado un código a tu correo. Ingrésalo para confirmar tu cuenta.
+      </p>
+    </div>
+
+    <form [formGroup]="confirmationForm" (ngSubmit)="confirm()" class="space-y-5">
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text font-medium">Código</span>
+        </label>
+        <input type="text" formControlName="code"
+               class="input input-bordered w-full focus:ring-2 focus:ring-primary"
+               placeholder="Ingresa tu código" required />
+      </div>
+
+      <button type="submit" class="btn btn-primary w-full" [disabled]="confirmationForm.invalid">
+        Confirmar
+      </button>
+
+      <p *ngIf="errorMessage" class="text-center text-error text-sm mt-3">{{ errorMessage }}</p>
+
+      <div class="text-start mt-2">
+        <span class="text-sm text-base-content/70 hover:text-primary cursor-pointer" (click)="toLogin()">
+          Regresar
+        </span>
+      </div>
+    </form>
+  </div>
+</div>

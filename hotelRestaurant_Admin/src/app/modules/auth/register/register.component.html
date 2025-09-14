@@ -1,0 +1,29 @@
+<div class="min-h-screen flex items-center justify-center bg-base-200">
+  <div class="card w-full max-w-md bg-base-100 shadow-xl p-6">
+    <h1 class="text-3xl font-bold text-primary text-center mb-6">Registro</h1>
+
+    <form [formGroup]="registerForm" (ngSubmit)="register()" class="space-y-5">
+      <input type="text" formControlName="cui" placeholder="CUI" class="input input-bordered w-full" />
+      <input type="email" formControlName="email" placeholder="Correo electrónico" class="input input-bordered w-full" />
+      <div class="relative">
+        <input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Contraseña" class="input input-bordered w-full pr-12" />
+        <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3" (click)="togglePasswordVisibility()">👁️</button>
+      </div>
+
+      <div class="relative">
+        <input [type]="showPassword ? 'text' : 'password'" formControlName="passwordConfirm" placeholder="Confirmar contraseña" class="input input-bordered w-full pr-12" />
+        <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3" (click)="togglePasswordVisibility()">👁️</button>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-full" [disabled]="loading">
+        {{ loading ? 'Registrando...' : 'Registrarse' }}
+      </button>
+
+      <p *ngIf="errorMessage" class="text-error text-center mt-2">{{ errorMessage }}</p>
+
+      <div class="text-end mt-2">
+        <span class="text-sm text-base-content/70 hover:text-primary cursor-pointer" (click)="toLogin()">Ya tengo una cuenta</span>
+      </div>
+    </form>
+  </div>
+</div>

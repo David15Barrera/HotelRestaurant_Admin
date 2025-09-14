@@ -1,0 +1,51 @@
+<div class="p-8 items-center">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-7xl mx-auto items-center">
+    
+    <!-- Botón Abrir Modal -->
+    <button (click)="openModal()" 
+      class="group flex flex-col items-center justify-center p-6 bg-white border border-gray-200 rounded-xl shadow-md transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
+      <div class="p-4 rounded-full bg-blue-50 text-blue-500 transition-colors duration-300 group-hover:bg-blue-100 group-hover:text-blue-600">
+        <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M12 4v16m8-8H4"/>
+        </svg>
+      </div>
+      <h3 class="mt-4 text-xl font-bold text-gray-800">Empleado Nuevo</h3>
+      <p class="text-sm text-gray-500 mt-1 text-center">Agrega un nuevo empleado al sistema.</p>
+    </button>
+  </div>
+
+  <!-- Lista de empleados -->
+  <div class="mt-8 bg-white rounded-xl shadow p-6">
+    <h2 class="text-xl font-bold mb-4">Empleados sin Manager</h2>
+    <ul class="divide-y divide-gray-200">
+        <li *ngFor="let emp of employees" class="py-3 flex justify-between">
+        <span class="font-medium">{{ emp.fullName }}</span>
+        <span class="text-gray-500">{{ emp.jobPosition }}</span>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- Modal -->
+ @if (modalOpen) {
+<div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+  <div class="bg-white rounded-xl p-6 w-full max-w-lg">
+    <h2 class="text-xl font-bold mb-4">Nuevo Empleado</h2>
+
+    <form (ngSubmit)="saveEmployee()" class="space-y-4">
+      <input [(ngModel)]="newEmployee.fullName" name="fullName" type="text" placeholder="Nombre Completo" class="w-full border rounded-lg p-2"/>
+      <input [(ngModel)]="newEmployee.cui" name="cui" type="text" placeholder="CUI" class="w-full border rounded-lg p-2"/>
+      <input [(ngModel)]="newEmployee.email" name="email" type="email" placeholder="Correo" class="w-full border rounded-lg p-2"/>
+      <input [(ngModel)]="newEmployee.phone" name="phone" type="text" placeholder="Teléfono" class="w-full border rounded-lg p-2"/>
+      <input [(ngModel)]="newEmployee.jobPosition" name="jobPosition" type="text" placeholder="Puesto" class="w-full border rounded-lg p-2"/>
+      <input [(ngModel)]="newEmployee.salary" name="salary" type="number" placeholder="Salario" class="w-full border rounded-lg p-2"/>
+      <input [(ngModel)]="newEmployee.address" name="address" type="text" placeholder="Dirección" class="w-full border rounded-lg p-2"/>
+
+      <div class="flex justify-end space-x-3">
+        <button type="button" (click)="closeModal()" class="px-4 py-2 bg-gray-300 rounded-lg">Cancelar</button>
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+}

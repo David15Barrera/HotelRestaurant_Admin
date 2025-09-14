@@ -1,0 +1,121 @@
+<div class="p-8 bg-gray-50 min-h-screen">
+  
+    <div class="mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-7xl mx-auto">    
+        <a (click)="openModal()" class="group flex flex-col items-center justify-center p-6 bg-white border border-gray-200 rounded-xl shadow-md transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
+        <div class="p-4 rounded-full bg-blue-50 text-blue-500 transition-colors duration-300 group-hover:bg-blue-100 group-hover:text-blue-600">
+            <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+            </svg>
+        </div>
+        <h3 class="mt-4 text-xl font-bold text-gray-800">Crear Habitacion</h3>
+        <p class="text-sm text-gray-500 mt-1 text-center">Crear nuevas habitaciones en el sistema</p>
+        </a>
+    </div>
+    </div>
+  <div class="overflow-x-auto bg-white rounded-xl shadow-md">
+    <table class="w-full border-collapse">
+        <thead class="bg-gray-100">
+        <tr class="border-b border-gray-200">
+            <th class="p-4 text-left text-gray-600 font-semibold uppercase tracking-wider hidden sm:table-cell">#</th>
+            <th class="p-4 text-left text-gray-600 font-semibold uppercase tracking-wider">Número</th>
+            <th class="p-4 text-left text-gray-600 font-semibold uppercase tracking-wider">Hotel</th> <!-- NUEVO -->
+            <th class="p-4 text-left text-gray-600 font-semibold uppercase tracking-wider hidden sm:table-cell">Capacidad</th>
+            <th class="p-4 text-left text-gray-600 font-semibold uppercase tracking-wider hidden md:table-cell">Precio/Día</th>
+            <th class="p-4 text-left text-gray-600 font-semibold uppercase tracking-wider">Estado</th>
+            <th class="p-4 text-left text-gray-600 font-semibold uppercase tracking-wider">Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let room of rooms; let i = index" class="border-t border-gray-100 hover:bg-gray-50 transition duration-150">
+            <td class="p-4 text-gray-700 font-medium hidden sm:table-cell">{{ i + 1 }}</td>
+            <td class="p-4 text-gray-700 font-medium">{{ room.roomNumber }}</td>
+            
+            <!-- Mostrar nombre del hotel -->
+            <td class="p-4 text-gray-700 font-medium">
+            {{ getHotelName(room.hotelId) }}
+            </td>
+            
+            <td class="p-4 text-gray-600 hidden sm:table-cell">{{ room.capacity }}</td>
+            <td class="p-4 text-gray-600 hidden md:table-cell">Q {{ room.pricePerDay }}</td>
+            <td class="p-4">
+            <span [ngClass]="{
+                'bg-green-500 text-white': room.state === 'Disponible',
+                'bg-yellow-500 text-white': room.state === 'Ocupado',
+                'bg-red-500 text-white': room.state === 'Mantenimiento'
+            }" class="px-3 py-1 rounded-full text-xs font-bold">{{ room.state }}</span>
+            </td>
+            <td class="p-4 flex gap-2">
+            <button (click)="openModal(room)" class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-150 transform hover:scale-105">
+                Editar
+            </button>
+            <button (click)="deleteRoom(room.id!)" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-150 transform hover:scale-105">
+                Eliminar
+            </button>
+            </td>
+        </tr>
+        </tbody>
+
+    </table>
+  </div>
+
+@if (showModal) {
+  <div class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 transition-opacity duration-300">
+    <div class="bg-white p-8 rounded-2xl w-full max-w-2xl shadow-2xl transform scale-100 transition-transform duration-300">
+      <h3 class="text-2xl font-bold mb-6 text-gray-800">{{ isEditing ? 'Editar Habitación' : 'Nueva Habitación' }}</h3>
+
+      <form (ngSubmit)="saveRoom()" #roomForm="ngForm" class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
+        
+        <div class="col-span-full sm:col-span-1">
+          <label class="block mb-2 text-gray-700 font-medium">Hotel</label>
+          <select [(ngModel)]="selectedRoom!.hotelId" name="hotelId" required class="w-full border-2 border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition">
+            <option value="" disabled>Selecciona un hotel</option>
+            <option *ngFor="let hotel of hotels" [value]="hotel.id">{{ hotel.name }}</option>
+          </select>
+        </div>
+
+        <div class="col-span-full sm:col-span-1">
+          <label class="block mb-2 text-gray-700 font-medium">Número</label>
+          <input [(ngModel)]="selectedRoom!.roomNumber" name="roomNumber" required class="w-full border-2 border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"/>
+        </div>
+
+        <div>
+          <label class="block mb-2 text-gray-700 font-medium">Precio/Día</label>
+          <input type="number" [(ngModel)]="selectedRoom!.pricePerDay" name="pricePerDay" required class="w-full border-2 border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"/>
+        </div>
+        
+        <div>
+          <label class="block mb-2 text-gray-700 font-medium">Mantenimiento/Día</label>
+          <input type="number" [(ngModel)]="selectedRoom!.maintenanceCostPerDay" name="maintenanceCostPerDay" class="w-full border-2 border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"/>
+        </div>
+
+        <div>
+          <label class="block mb-2 text-gray-700 font-medium">Capacidad</label>
+          <input type="number" [(ngModel)]="selectedRoom!.capacity" name="capacity" class="w-full border-2 border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"/>
+        </div>
+
+        <div>
+          <label class="block mb-2 text-gray-700 font-medium">Estado</label>
+          <select [(ngModel)]="selectedRoom!.state" name="state" class="w-full border-2 border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition">
+            <option value="disponible">Disponible</option>
+            <option value="ocupado">Ocupada</option>
+            <option value="mantenimiento">Mantenimiento</option>
+          </select>
+        </div>
+
+        <div class="col-span-full">
+          <label class="block mb-2 text-gray-700 font-medium">Descripción</label>
+          <textarea [(ngModel)]="selectedRoom!.description" name="description" class="w-full border-2 border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"></textarea>
+        </div>
+
+        <div class="col-span-full flex justify-end gap-3 mt-4">
+          <button type="button" (click)="closeModal()" class="px-5 py-2.5 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300 transition duration-150">Cancelar</button>
+          <button type="submit" class="px-5 py-2.5 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition duration-150">
+            {{ isEditing ? 'Actualizar' : 'Crear' }}
+          </button>
+        </div>
+      </form>
+    </div>    
+  </div>
+}
+</div>

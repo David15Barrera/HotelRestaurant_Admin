@@ -1,0 +1,186 @@
+@if (order) {
+  <div class="p-8 bg-gray-100 min-h-screen font-sans text-gray-800">
+
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8 border border-gray-200">
+      <h2 class="text-3xl font-extrabold text-blue-700 mb-2">Detalle del Pedido</h2>
+      <p class="text-gray-500 mb-4">Información general del pedido</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="flex items-center space-x-2">
+          <svg class="w-6 h-6 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+          <p><strong>ID Pedido:</strong> {{ order.id }}</p>
+        </div>
+        
+        <div class="flex items-center space-x-2">
+          <svg class="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-2h-2v2zm0-4h2v-4h-2v4z"/></svg>
+          <p><strong>Total:</strong> Q{{ order.totalPrice }}</p>
+        </div>
+        
+        <div class="flex items-center space-x-2">
+          <svg class="w-6 h-6 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 15c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/></svg>
+          <p><strong>Estado:</strong> {{ order.status }}</p>
+        </div>
+        
+        <div class="flex items-center space-x-2">
+          <svg class="w-6 h-6 text-yellow-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+          <p><strong>Fecha:</strong> {{ order.createdAt | date:'short' }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8 border border-gray-200">
+      <div class="flex items-center space-x-2">
+        <svg class="w-6 h-6 text-pink-500" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2a10 10 0 100 20 10 10 0 000-20zM11 15h2v2h-2v-2zm0-8h2v6h-2V7z"/>
+        </svg>
+        <p>
+          <strong>Promoción:</strong> 
+          @if (order.promotion) {
+            {{ order.promotion.name }} ({{ order.promotion.discountPercentage }}% desc.)
+          } @else {
+            <span class="text-gray-500">Sin promoción</span>
+          }
+        </p>
+      </div>
+
+      @if (order.status === 'PAGADO' || order.status === 'COMPLETADO') {
+        <button
+          (click)="openReviewModal(order.restaurantId!)"
+          class="w-full mt-6 bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-sm hover:bg-blue-700 transition"
+        >
+          Dejar Opinión
+        </button>
+      }
+    </div>
+
+    @if (details && details.length > 0) {
+      <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+        <h3 class="text-2xl font-bold text-gray-900 mb-4">Platos en el Pedido</h3>
+        <ul class="divide-y divide-gray-200">
+          @for (d of details; track d.dishId) {
+            <li class="py-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-y-2">
+                <div class="font-semibold text-gray-900 text-lg"> {{ d.dishName }} </div>
+                <div class="md:text-right">
+                  <p class="text-gray-600"><strong>Cantidad:</strong> {{ d.quantity }}</p>
+                  <p class="text-gray-600"><strong>Precio Unitario:</strong> Q{{ d.unitCost | currency:'GTQ':'symbol':'1.2-2' }}</p>
+                  <p class="text-gray-600 font-bold"><strong>Subtotal:</strong> Q{{ d.subtotal | currency:'GTQ':'symbol':'1.2-2' }}</p>
+                  <p class="text-pink-600">
+                      <strong>Promoción:</strong> 
+                      @if (d.promotion) {
+                        {{ d.promotion.name }} ({{ d.promotion.discountPercentage }}% desc.)
+                      } @else {
+                        <span class="text-gray-500">Sin promoción</span>
+                      }
+                    </p>
+                </div>
+              </div>
+            </li>
+          }
+        </ul>
+      </div>
+    } @else {
+      <div class="p-8 bg-white rounded-xl shadow-lg text-center text-gray-500">
+        <p>Este pedido no tiene detalles.</p>
+      </div>
+    }
+  </div>
+} @else {
+  <div class="p-8 text-center text-gray-500">
+    <p class="animate-pulse">Cargando pedido...</p>
+  </div>
+}
+
+@if (isModalOpen) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50 backdrop-blur-sm">
+    <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-lg mx-4 space-y-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-gray-800">Dejar una opinión</h2>
+        <button (click)="closeReviewModal()" class="text-gray-500 hover:text-gray-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700">¿Sobre qué quieres opinar?</label>
+        <div class="flex space-x-4">
+          <button 
+            (click)="reviewType = 'restaurant'"
+            [class.bg-blue-600]="reviewType === 'restaurant'"
+            [class.text-white]="reviewType === 'restaurant'"
+            [class.bg-gray-200]="reviewType !== 'restaurant'"
+            [class.text-gray-800]="reviewType !== 'restaurant'"
+            class="py-2 px-4 rounded-lg font-semibold transition"
+          >
+            Restaurante
+          </button>
+          <button 
+            (click)="reviewType = 'dishes'"
+            [class.bg-blue-600]="reviewType === 'dishes'"
+            [class.text-white]="reviewType === 'dishes'"
+            [class.bg-gray-200]="reviewType !== 'dishes'"
+            [class.text-gray-800]="reviewType !== 'dishes'"
+            class="py-2 px-4 rounded-lg font-semibold transition"
+          >
+            Platillo
+          </button>
+        </div>
+      </div>
+
+      @if (reviewType === 'dishes') {
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2" for="dishSelect">Seleccionar Platillo</label>
+          <select 
+            id="dishSelect" 
+            [(ngModel)]="selectedDishId"
+            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          >
+            @for (dish of details; track dish.dishId) {
+              <option [ngValue]="dish.dishId">{{ dish.dishName }}</option>
+            }
+          </select>
+        </div>
+      }
+      
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Calificación</label>
+          <div class="flex items-center space-x-1">
+            @for (star of [1, 2, 3, 4, 5]; track star) {
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                class="h-8 w-8 cursor-pointer transition-colors duration-200"
+                [class.text-yellow-400]="rating >= star"
+                [class.text-gray-300]="rating < star"
+                (click)="rating = star"
+                fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            }
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2" for="comment">Comentario</label>
+          <textarea 
+            id="comment" 
+            [(ngModel)]="comment"
+            rows="4" 
+            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+        </div>
+      </div>
+      
+      <div class="flex justify-end space-x-4">
+        <button (click)="closeReviewModal()" class="py-2 px-4 rounded-md text-gray-700 hover:bg-gray-100 transition">Cancelar</button>
+        <button 
+          (click)="submitReview()" 
+          [disabled]="rating === 0"
+          class="py-2 px-6 rounded-md text-white font-semibold bg-blue-600 hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed">
+          Enviar Opinión
+        </button>
+      </div>
+    </div>
+  </div>
+}

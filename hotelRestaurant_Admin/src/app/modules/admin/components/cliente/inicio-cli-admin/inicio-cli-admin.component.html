@@ -1,0 +1,75 @@
+<div class="p-8 bg-gray-50 min-h-screen">
+  
+  <div class="mb-6">
+   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-7xl mx-auto">    
+    <a (click)="openModal()" class="group flex flex-col items-center justify-center p-6 bg-white border border-gray-200 rounded-xl shadow-md transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
+      <div class="p-4 rounded-full bg-blue-50 text-blue-500 transition-colors duration-300 group-hover:bg-blue-100 group-hover:text-blue-600">
+        <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+        </svg>
+      </div>
+      <h3 class="mt-4 text-xl font-bold text-gray-800">Crear Cliente</h3>
+      <p class="text-sm text-gray-500 mt-1 text-center">Crear nuevo cliente en el sistema</p>
+    </a>
+  </div>
+  </div>
+
+  <div class="overflow-x-auto bg-white rounded-xl shadow-md">
+    <table class="w-full border-collapse">
+      <thead class="bg-gray-100">
+        <tr class="border-b border-gray-200">
+          <th class="p-4 text-left text-gray-600 font-semibold uppercase tracking-wider">Nombre</th>
+          <th class="p-4 text-left text-gray-600 font-semibold uppercase tracking-wider">CUI</th>
+          <th class="p-4 text-left text-gray-600 font-semibold uppercase tracking-wider hidden sm:table-cell">Teléfono</th>
+          <th class="p-4 text-left text-gray-600 font-semibold uppercase tracking-wider hidden md:table-cell">Email</th>
+          <th class="p-4 text-left text-gray-600 font-semibold uppercase tracking-wider hidden lg:table-cell">Puntos</th>          
+          <th class="p-4 text-left text-gray-600 font-semibold uppercase tracking-wider">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of customers" class="border-t border-gray-100 hover:bg-gray-50 transition duration-150">
+          <td class="p-4 text-gray-700 font-medium">{{ c.fullName }}</td>
+          <td class="p-4 text-gray-600">{{ c.cui }}</td>
+          <td class="p-4 text-gray-600 hidden sm:table-cell">{{ c.phone }}</td>
+          <td class="p-4 text-gray-600 hidden md:table-cell">{{ c.email }}</td>
+          <td class="p-4 text-gray-600 hidden lg:table-cell">{{ c.loyaltyPoints}} </td>
+          <td class="p-4 flex gap-2">
+            <button (click)="openModal(true, c)" class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-150 transform hover:scale-105">
+              Editar
+            </button>
+            <button (click)="deleteCustomer(c.id!)" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-150 transform hover:scale-105">
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="showModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 transition-opacity duration-300">
+    <div class="bg-white p-8 rounded-2xl w-full max-w-xl shadow-2xl transform scale-100 transition-transform duration-300">
+      <h3 class="text-2xl font-bold mb-6 text-gray-800">{{ editing ? 'Editar Cliente' : 'Nuevo Cliente' }}</h3>
+
+      <form (ngSubmit)="saveCustomer()" class="space-y-5">
+        <input [(ngModel)]="currentCustomer.fullName" name="fullName" type="text" placeholder="Nombre completo" class="w-full border-2 border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition" required>
+        <input [(ngModel)]="currentCustomer.cui" name="cui" type="text" placeholder="CUI" class="w-full border-2 border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition" required>
+        <input [(ngModel)]="currentCustomer.phone" name="phone" type="text" placeholder="Teléfono" class="w-full border-2 border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition">
+        <input [(ngModel)]="currentCustomer.email" name="email" type="email" placeholder="Email" class="w-full border-2 border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition">
+        <input [(ngModel)]="currentCustomer.address" name="address" type="text" placeholder="Dirección" class="w-full border-2 border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition">
+        <div class="space-y-2">
+          <h4 class="text-gray-700 font-semibold">Cantidad de Puntos</h4>
+          <input [(ngModel)]="currentCustomer.loyaltyPoints" name="loyaltyPoints" type="number" placeholder="Puntos" class="w-full border-2 border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition">
+        </div>
+
+        <div class="flex justify-end gap-3 mt-6">
+          <button type="button" (click)="closeModal()" class="px-5 py-2.5 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300 transition duration-150">
+            Cancelar
+          </button>
+          <button type="submit" class="px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-150">
+            {{ editing ? 'Actualizar' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,43 @@
+<div class="p-8 bg-gray-50 min-h-screen">
+  <h2 class="text-3xl font-bold text-gray-900 mb-6">Mis Pedidos</h2>
+
+  @if (orders.length === 0) {
+      <div class="text-gray-500">
+        No tienes pedidos realizados.
+    </div>
+  }
+
+  <div class="space-y-4">
+    <div *ngFor="let order of orders"
+      class="bg-white shadow-md rounded-lg p-4 flex justify-between items-center border">
+      
+      <div>
+        <p class="font-semibold">Pedido #{{ order.id }}</p>
+        <p class="text-sm text-gray-600">
+          Total: Q{{ order.totalPrice }}
+        </p>
+        <p class="text-sm font-medium"
+           [ngClass]="{'text-green-600': order.status === 'COMPLETADO',
+                       'text-red-600': order.status === 'CANCELADO',
+                       'text-yellow-600': order.status === 'PENDIENTE'}">
+          Estado: {{ order.status }}
+        </p>
+      </div>
+
+      <div class="flex gap-3">
+        <button (click)="verDetalle(order.id)"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          Ver detalle
+        </button>
+
+        @if (order.status === 'PENDIENTE') {
+        <button
+          (click)="cancelarPedido(order)"
+          class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+          Cancelar
+        </button>
+        }
+      </div>
+    </div>
+  </div>
+</div>

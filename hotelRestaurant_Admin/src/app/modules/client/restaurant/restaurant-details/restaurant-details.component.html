@@ -1,0 +1,159 @@
+<div class="p-8 bg-gray-50 min-h-screen">
+  @if (restaurant) {
+    <div
+      class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-4xl mx-auto"
+    >
+      <!-- Encabezado -->
+      <div class="flex items-center space-x-4 mb-6 border-b pb-4">
+        <div class="p-3 bg-blue-100 rounded-full text-blue-600">
+          <!-- Icono restaurante -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            <path d="M12 4v16"></path>
+            <path d="M8 4V20"></path>
+            <path d="M16 4V20"></path>
+            <path d="M10 9H8"></path>
+            <path d="M10 15H8"></path>
+            <path d="M16 9h-2"></path>
+            <path d="M16 15h-2"></path>
+          </svg>
+        </div>
+        <h1 class="text-3xl font-bold text-gray-900">
+          {{ restaurant.name }}
+        </h1>
+      </div>
+
+ <!-- DATOS RESTAURANTE -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 text-gray-700">
+        <div>
+          <h2 class="text-xl font-bold text-gray-800 mb-2">Detalles del Restaurante</h2>
+          <p><span class="font-semibold">Dirección:</span> {{ restaurant.address }}</p>
+          <p><span class="font-semibold">Teléfono:</span> {{ restaurant.phone }}</p>
+          <p><span class="font-semibold">Capacidad:</span> {{ restaurant.capacity }} personas</p>
+          <p><span class="font-semibold">Horario:</span> {{ restaurant.openingTime }} - {{ restaurant.closingTime }}</p>
+          <p><span class="font-semibold">Fecha de creación:</span> {{ restaurant.createdAt || 'N/A' }}</p>
+        </div>
+
+        @if (restaurant.hotelName) {
+          <div>
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Hotel Asociado</h2>
+            <p><span class="font-semibold">Nombre:</span> {{ restaurant.hotelName }}</p>
+            <p><span class="font-semibold">Dirección:</span> {{ restaurant.hotelAddress }}</p>
+            <p><span class="font-semibold">Teléfono:</span> {{ restaurant.hotelPhone }}</p>
+            <p><span class="font-semibold">Habitaciones:</span> {{ restaurant.hotelTotalRooms }}</p>
+          </div>
+        }
+      </div>
+
+  <!--PROMOCIONES-->
+          @if (promotions.length > 0) {
+      <div class="mt-8 bg-yellow-50 border border-yellow-300 p-6 rounded-lg shadow">
+        <h2 class="text-2xl font-bold text-yellow-800 mb-4">Promociones Disponibles 🎉</h2>
+        <ul class="space-y-3">
+          @for (promo of promotions; track promo.id) {
+            <li class="bg-white shadow p-4 rounded-lg border border-gray-200">
+              <p class="font-bold text-lg">{{ promo.name }}</p>
+              <p class="text-gray-700">{{ promo.description }}</p>
+              <p class="text-green-600 font-semibold">Descuento: {{ promo.discountPercentage }}%</p>
+              <p class="text-sm text-gray-500">
+                Vigencia: {{ promo.startDate }} - {{ promo.endDate }}
+              </p>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+
+      <!-- Botones -->
+      <div class="mt-8 flex gap-4">
+        @if (restaurant.hotelIdResponse) {
+          <button
+            (click)="irOpiniones(restaurant.hotelIdResponse!)"
+            class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300 transform hover:scale-105"
+          >
+            Ver Hotel
+          </button>
+        }
+        <button
+          (click)="irAlMenu(restaurant.id)"
+          class="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition duration-300 transform hover:scale-105"
+        >
+          Ver Menú
+        </button>
+
+                <button
+          (click)="irArReviews(restaurant.id)"
+          class="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition duration-300 transform hover:scale-105"
+        >
+          Opiniones
+        </button>
+      </div>
+    </div>
+
+    <!-- Menú -->
+@if (showMenu) {
+  <div class="mt-8 max-w-4xl mx-auto p-4 md:p-0">
+    <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Nuestro Menú</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      @for (dish of dishes; track dish.id) {
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl">
+          <div class="p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-2 truncate">{{ dish.name }}</h3>
+            <p class="text-gray-600 text-sm mb-4">{{ dish.description }}</p>
+            <div class="flex items-center justify-between">
+              <p class="text-2xl font-extrabold text-green-600">Q{{ dish.price }}</p>
+              <button
+                    (click)="addToCart(dish)"
+                    class="px-5 py-2 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition duration-150 transform hover:scale-105"
+                  >
+                    Ordenar
+                  </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+
+  <!-- Carrito -->
+@if (cart.length > 0) {
+  <div class="mt-12 max-w-4xl mx-auto p-6 bg-gray-100 rounded-xl shadow">
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">Carrito de Pedido</h2>
+    <div class="space-y-4">
+      @for (item of cart; track item.dish.id) {
+        <div class="flex justify-between items-center bg-white p-4 rounded-lg shadow">
+          <div>
+            <p class="font-semibold">{{ item.dish.name }} x {{ item.quantity }}</p>
+            <p class="text-gray-500">Q {{ item.dish.price * item.quantity }}</p>
+          </div>
+          <button
+            (click)="removeFromCart(item.dish.id)"
+            class="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+          >
+            Eliminar
+          </button>
+        </div>
+      }
+    </div>
+    <div class="mt-4 flex justify-between items-center font-bold text-lg">
+      <span>Total:</span>
+      <span>Q {{ getTotal() }}</span>
+    </div>
+    <button
+      (click)="confirmarPedido()"
+      class="mt-6 w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition"
+    >
+      Confirmar Pedido
+    </button>
+  </div>
+}
+
+}
+  }
+
+  @if (!restaurant) {
+    <div class="text-gray-500 text-lg">Cargando restaurante...</div>
+  }
+</div>

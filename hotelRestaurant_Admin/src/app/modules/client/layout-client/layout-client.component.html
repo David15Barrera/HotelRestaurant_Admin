@@ -1,0 +1,200 @@
+<div class="flex h-screen bg-gray-100">
+  <!-- Sidebar Desktop -->
+  <aside
+    class="w-64 space-y-8 py-8 px-6 hidden md:flex flex-col bg-gray-800 text-gray-200 shadow-xl"
+  >
+    <!-- HEADER -->
+    <div class="flex items-center space-x-3 text-2xl font-extrabold text-white">
+      <svg class="h-8 w-8 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-14h4v2h-4v-2zm0 4h4v6h-4v-6zm5 2h-1v-2h1v2z"></path>
+      </svg>
+      <span>Menu Cliente</span>
+    </div>
+
+    <nav class="flex-1 space-y-4">
+      <!-- Inicio -->
+      <a routerLink="inicio" routerLinkActive="bg-gray-700 text-yellow-300 font-semibold shadow-md"     class="flex items-center px-4 py-3 rounded-xl transition-colors duration-200 hover:bg-gray-700 hover:text-yellow-300 group">
+        <svg class="h-6 w-6 mr-3 text-gray-400 group-hover:text-yellow-300 transition-colors duration-200" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+        </svg>
+        Inicio
+      </a>
+
+      <!-- Hoteles -->
+      <div>
+        <button
+          (click)="toggleSubmenu('hoteles')" class="flex items-center justify-between w-full px-4 py-3 rounded-xl transition-colors duration-200 hover:bg-gray-700 hover:text-yellow-300 group">
+          <span class="flex items-center">
+            <svg class="h-6 w-6 mr-3 text-gray-400 group-hover:text-yellow-300 transition-colors duration-200" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M17 10h-2V7h-3V5.5c0-1.38-1.12-2.5-2.5-2.5S7 4.12 7 5.5V7H4c-1.1 0-2 .9-2 2v8h2V9h16l-.01 8h-4.22c-.62 0-1.18.23-1.61.64-.42.41-.67.97-.67 1.61s.25 1.2.67 1.61c.43.41 1 .64 1.62.64h4.22c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z"/>
+            </svg>
+            <span>Hoteles</span>
+          </span>
+          <svg class="h-5 w-5 transition-transform duration-300" [class.rotate-90]="openSubmenu === 'hoteles'" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+          </svg>
+        </button>
+        <div class="overflow-hidden transition-all duration-500 ease-in-out" [class.max-h-0]="openSubmenu !== 'hoteles'" [class.max-h-96]="openSubmenu === 'hoteles'">
+          <a routerLink="hoteles" (click)="onSidenavClose()" class="block py-2 pl-14 rounded-xl hover:bg-gray-700 hover:text-yellow-300">
+            Listar Hoteles
+          </a>
+          <a routerLink="reservaciones" (click)="onSidenavClose()" class="block py-2 pl-14 rounded-xl hover:bg-gray-700 hover:text-yellow-300">
+            Ver Reservaciones
+          </a>
+        </div>
+      </div>
+
+      <!-- Restaurantes -->
+      <div>
+        <button
+          (click)="toggleSubmenu('restaurantes')"
+          class="flex items-center justify-between w-full px-4 py-3 rounded-xl transition-colors duration-200 hover:bg-gray-700 hover:text-yellow-300 group"
+        >
+          <span class="flex items-center">
+            <svg class="h-6 w-6 mr-3 text-gray-400 group-hover:text-yellow-300 transition-colors duration-200" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M18 5V3h-2V1h-2v2h-2V1h-2v2H8V1H6v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM4 21V5h16v16H4zm2-4h12V7H6v10z" />
+            </svg>
+            <span>Restaurantes</span>
+          </span>
+          <svg class="h-5 w-5 transition-transform duration-300" [class.rotate-90]="openSubmenu === 'restaurantes'" fill="currentColor" viewBox="0 0 24 24" >
+            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+          </svg>
+        </button>
+        <div class="overflow-hidden transition-all duration-500 ease-in-out" [class.max-h-0]="openSubmenu !== 'restaurantes'" [class.max-h-96]="openSubmenu === 'restaurantes'" >
+          <a routerLink="restaurantes" (click)="onSidenavClose()" class="block py-2 pl-14 rounded-xl hover:bg-gray-700 hover:text-yellow-300">
+            Listar Restaurantes
+          </a>
+          <a routerLink="pedidos" (click)="onSidenavClose()" class="block py-2 pl-14 rounded-xl hover:bg-gray-700 hover:text-yellow-300">
+            Ver Pedidos
+          </a>
+        </div>
+      </div>
+
+          <!-- Perfil -->
+       <a routerLink="perfil-cliente" routerLinkActive="bg-gray-700 text-yellow-300 font-semibold shadow-md" class="flex items-center px-4 py-3 rounded-xl hover:bg-gray-700 hover:text-yellow-300 group" >
+        <svg class="h-6 w-6 mr-3 text-gray-400 group-hover:text-yellow-300 transition-colors duration-200" fill="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+        </svg>
+         Perfil
+    </a>
+    </nav>
+
+    <!-- Logout -->
+    <a (click)="signOut()" class="flex items-center px-4 py-3 rounded-xl hover:bg-red-600 hover:text-white mt-auto cursor-pointer">
+      <svg class="h-6 w-6 mr-3 text-red-400 group-hover:text-white" fill="currentColor" viewBox="0 0 24 24" >
+        <path d="M16 9v-4l-8 7 8 7v-4h9v-6h-9zm-13 0h4v-2h-4v-2h4v-2h-4v-2h4c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2h-4c-1.1 0-2-.9-2-2V11c0-1.1.9-2 2-2z"/>
+      </svg>
+      Cerrar Sesión
+    </a>
+  </aside>
+
+  <!-- Sidebar Mobile -->
+   @if(menuOpen){
+  <div class="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden" (click)="toggleMenu()" ></div>
+  <aside class="fixed top-0 left-0 h-full w-64 bg-gray-800 text-gray-200 shadow-xl z-50 transform transition-transform duration-300 md:hidden flex flex-col py-8 px-6" [class.-translate-x-full]="!menuOpen" >
+      
+    <ng-container *ngTemplateOutlet="menuContent"></ng-container>
+  </aside>
+}
+  <!-- Main Content -->
+  <main class="flex-1 bg-gray-100 p-6 overflow-y-auto">
+    <!-- Botón hamburguesa solo en móvil -->
+    <button (click)="toggleMenu()" class="md:hidden mb-4 p-2 rounded-lg bg-gray-800 text-white" >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" >
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Template compartido -->
+  <ng-template #menuContent>
+
+        <!-- HEADER -->
+    <div class="flex items-center space-x-3 text-1xl font-extrabold text-white">
+      <span>Menu Cliente</span>
+    </div>
+   <!-- NAV LINKS -->
+    <nav class="flex-1 space-y-4">
+      <!-- Inicio -->
+      <a routerLink="inicio" routerLinkActive="bg-gray-700 text-yellow-300 font-semibold shadow-md" class="flex items-center px-4 py-3 rounded-xl transition-colors duration-200 hover:bg-gray-700 hover:text-yellow-300 group" >
+        <svg class="h-6 w-6 mr-3 text-gray-400 group-hover:text-yellow-300 transition-colors duration-200" fill="currentColor" viewBox="0 0 24 24" >
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+        </svg>
+        Inicio
+      </a>
+
+      <!-- Hoteles -->
+      <div>
+        <button (click)="toggleSubmenu('hoteles')" class="flex items-center justify-between w-full px-4 py-3 rounded-xl transition-colors duration-200 hover:bg-gray-700 hover:text-yellow-300 group" >
+          <span class="flex items-center">
+            <svg class="h-6 w-6 mr-3 text-gray-400 group-hover:text-yellow-300 transition-colors duration-200" fill="currentColor" viewBox="0 0 24 24" >
+              <path d="M17 10h-2V7h-3V5.5c0-1.38-1.12-2.5-2.5-2.5S7 4.12 7 5.5V7H4c-1.1 0-2 .9-2 2v8h2V9h16l-.01 8h-4.22c-.62 0-1.18.23-1.61.64-.42.41-.67.97-.67 1.61s.25 1.2.67 1.61c.43.41 1 .64 1.62.64h4.22c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z" />
+            </svg>
+            <span>Hoteles</span>
+          </span>
+          <svg class="h-5 w-5 transition-transform duration-300" [class.rotate-90]="openSubmenu === 'hoteles'" fill="currentColor" viewBox="0 0 24 24" >
+            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+          </svg>
+        </button>
+        <div class="overflow-hidden transition-all duration-500 ease-in-out" [class.max-h-0]="openSubmenu !== 'hoteles'" [class.max-h-96]="openSubmenu === 'hoteles'" >
+          <a routerLink="hoteles" (click)="onSidenavClose()" class="block py-2 pl-14 rounded-xl hover:bg-gray-700 hover:text-yellow-300" >
+            Listar Hoteles
+          </a>
+          <a routerLink="habitaciones" (click)="onSidenavClose()" class="block py-2 pl-14 rounded-xl hover:bg-gray-700 hover:text-yellow-300" >
+            Ver Habitaciones
+          </a>
+        </div>
+      </div>
+
+      <!-- Restaurantes -->
+      <div>
+        <button (click)="toggleSubmenu('restaurantes')" class="flex items-center justify-between w-full px-4 py-3 rounded-xl transition-colors duration-200 hover:bg-gray-700 hover:text-yellow-300 group" >
+          <span class="flex items-center">
+            <svg class="h-6 w-6 mr-3 text-gray-400 group-hover:text-yellow-300 transition-colors duration-200" fill="currentColor" viewBox="0 0 24 24" >
+              <path d="M18 5V3h-2V1h-2v2h-2V1h-2v2H8V1H6v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM4 21V5h16v16H4zm2-4h12V7H6v10z" />
+            </svg>
+            <span>Restaurantes</span>
+          </span>
+          <svg class="h-5 w-5 transition-transform duration-300" [class.rotate-90]="openSubmenu === 'restaurantes'" fill="currentColor" viewBox="0 0 24 24" >
+            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+          </svg>
+        </button>
+        <div class="overflow-hidden transition-all duration-500 ease-in-out" [class.max-h-0]="openSubmenu !== 'restaurantes'" [class.max-h-96]="openSubmenu === 'restaurantes'" >
+          <a routerLink="restaurantes" (click)="onSidenavClose()" class="block py-2 pl-14 rounded-xl hover:bg-gray-700 hover:text-yellow-300">
+            Listar Restaurantes
+          </a>
+          <a routerLink="/restaurantes/menu" (click)="onSidenavClose()" class="block py-2 pl-14 rounded-xl hover:bg-gray-700 hover:text-yellow-300" >
+            Ver Menú
+          </a>
+        </div>
+      </div>
+
+      <!-- Reservas -->
+      <a routerLink="/mis-reservas" routerLinkActive="bg-gray-700 text-yellow-300 font-semibold shadow-md" class="flex items-center px-4 py-3 rounded-xl hover:bg-gray-700 hover:text-yellow-300 group" >
+        <svg class="h-6 w-6 mr-3 text-gray-400 group-hover:text-yellow-300 transition-colors duration-200" fill="currentColor" viewBox="0 0 24 24" >
+          <path d="M19 3h-2V1h-2v2H9V1H7v2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H5V9h14v12zM7 11h2v2H7zm0 4h2v2H7zm4-4h2v2h-2zm0 4h2v2h-2zm4-4h2v2h-2zm0 4h2v2h-2z" />
+        </svg>
+        Mis Reservas / Pedidos
+      </a>
+    </nav>
+
+
+      <!-- Reservas -->
+      <a routerLink="/mis-reservas" routerLinkActive="bg-gray-700 text-yellow-300 font-semibold shadow-md" class="flex items-center px-4 py-3 rounded-xl hover:bg-gray-700 hover:text-yellow-300 group" >
+        <svg class="h-6 w-6 mr-3 text-gray-400 group-hover:text-yellow-300 transition-colors duration-200" fill="currentColor" viewBox="0 0 24 24" >
+          <path d="M19 3h-2V1h-2v2H9V1H7v2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H5V9h14v12zM7 11h2v2H7zm0 4h2v2H7zm4-4h2v2h-2zm0 4h2v2h-2zm4-4h2v2h-2zm0 4h2v2h-2z" />
+        </svg>
+        Perfil
+      </a>
+
+    <!-- Logout -->
+    <a (click)="signOut()" class="flex items-center px-4 py-3 rounded-xl hover:bg-red-600 hover:text-white mt-auto cursor-pointer" >
+      <svg class="h-6 w-6 mr-3 text-red-400 group-hover:text-white" fill="currentColor" viewBox="0 0 24 24" >
+        <path d="M16 9v-4l-8 7 8 7v-4h9v-6h-9zm-13 0h4v-2h-4v-2h4v-2h-4v-2h4c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2h-4c-1.1 0-2-.9-2-2V11c0-1.1.9-2 2-2z" />
+      </svg>
+      Cerrar Sesión
+    </a>
+  </ng-template>
+</div>

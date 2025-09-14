@@ -1,0 +1,134 @@
+<div class="p-8 bg-gray-50 min-h-screen">
+  <div class="flex justify-between items-center mb-6 p-4 bg-white rounded-xl shadow-md">
+    <h2 class="text-3xl font-bold text-gray-800">Administrar Reservas</h2>
+  </div>
+
+  @if (loading) {
+    <div class="text-gray-500 p-6 text-center">Cargando reservas...</div>
+  }
+
+  @if (!loading && reservations.length > 0) {
+    <div class="overflow-x-auto bg-white rounded-xl shadow-md">
+      <table class="w-full border-collapse">
+        <thead class="bg-gray-100">
+          <tr class="border-b border-gray-200">
+            <th class="p-4 text-left text-gray-600 font-semibold uppercase tracking-wider hidden sm:table-cell">ID</th>
+            <th class="p-4 text-left text-gray-600 font-semibold uppercase tracking-wider">Cliente</th>
+            <th class="p-4 text-left text-gray-600 font-semibold uppercase tracking-wider hidden md:table-cell">Habitación</th>
+            <th class="p-4 text-left text-gray-600 font-semibold uppercase tracking-wider">Estado</th>
+            <th class="p-4 text-left text-gray-600 font-semibold uppercase tracking-wider hidden lg:table-cell">Fechas</th>
+            <th class="p-4 text-left text-gray-600 font-semibold uppercase tracking-wider">Total</th>
+            <th class="p-4 text-left text-gray-600 font-semibold uppercase tracking-wider">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let res of reservations" class="border-t border-gray-100 hover:bg-gray-50 transition duration-150">
+            <td class="p-4 text-gray-700 hidden sm:table-cell">{{ res.id }}</td>
+            <td class="p-4 text-gray-700 font-medium">{{ res.customerName }}</td> <td class="p-4 text-gray-600 hidden md:table-cell">{{ getRoomName(res.roomId) }}</td>
+            <td class="p-4">
+              <span [ngClass]="{
+                'bg-green-500 text-white': res.state === 'pagado',
+                'bg-yellow-500 text-white': res.state === 'ocupada',
+                'bg-red-500 text-white': res.state === 'cancelada'
+              }" class="px-3 py-1 rounded-full text-xs font-bold uppercase">{{ res.state }}</span>
+            </td>
+            <td class="p-4 text-gray-600 hidden lg:table-cell">{{ res.startDate | date }} - {{ res.endDate | date }}</td>
+            <td class="p-4 text-gray-800 font-bold">Q{{ res.totalPrice }}</td>
+            <td class="p-4 flex gap-2">
+              <button (click)="openEditModal(res)" class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-150 transform hover:scale-105">
+                Editar
+              </button>
+              <button (click)="eliminarReserva(res)" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-150 transform hover:scale-105">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  }
+
+  @if (!loading && reservations.length === 0) {
+    <div class="text-gray-500 p-6 text-center">No hay reservas registradas.</div>
+  }
+</div>
+
+@if (editingReservation) {
+  <div class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 transition-opacity duration-300">
+    <div class="bg-white p-6 rounded-2xl w-full max-w-lg shadow-2xl transform scale-100 transition-transform duration-300 max-h-[90vh] overflow-y-auto">
+      <h3 class="text-2xl font-bold mb-6 text-gray-800">Editar Reserva #{{ editingReservation.id }}</h3>
+
+      <form (ngSubmit)="saveEdit()" class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
+     <div>
+          <label class="block mb-2 text-gray-700 font-medium text-sm">Cliente ID</label>
+          <input [(ngModel)]="editingReservation.customerId" name="customerId" class="w-full border-2 border-gray-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition text-sm" readonly/>
+        </div>
+         <div>
+          <label class="block mb-2 text-gray-700 font-medium text-sm">Nombre del Cliente</label>
+          <input [value]="getCustomerName(editingReservation.customerId)" class="w-full border-2 border-gray-200 rounded-lg p-2 bg-gray-100 focus:outline-none text-sm" readonly/>
+        </div>
+
+        <div>
+          <label class="block mb-2 text-gray-700 font-medium text-sm">Habitación</label>
+          <select [(ngModel)]="editingReservation.roomId" name="roomId" class="w-full border-2 border-gray-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition text-sm">
+            <option *ngFor="let room of rooms" [value]="room.id">
+              {{ getRoomName(room.id!) }} - {{ getHotelName(room.id!) }}
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block mb-2 text-gray-700 font-medium text-sm">Fecha inicio</label>
+          <input type="date" [(ngModel)]="editingReservation.startDate" name="startDate" class="w-full border-2 border-gray-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition text-sm"/>
+        </div>
+
+        <div>
+          <label class="block mb-2 text-gray-700 font-medium text-sm">Fecha fin</label>
+          <input type="date" [(ngModel)]="editingReservation.endDate" name="endDate" class="w-full border-2 border-gray-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition text-sm"/>
+        </div>
+
+        <div>
+          <label class="block mb-2 text-gray-700 font-medium text-sm">Estado</label>
+          <select [(ngModel)]="editingReservation.state" name="state" class="w-full border-2 border-gray-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition text-sm">
+            <option value="ocupada">Ocupada</option>
+            <option value="pagado">Pagado</option>
+            <option value="cancelada">Cancelada</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block mb-2 text-gray-700 font-medium text-sm">Precio por día</label>
+          <input type="number" [(ngModel)]="editingReservation.pricePerDay" name="pricePerDay" class="w-full border-2 border-gray-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition text-sm"/>
+        </div>
+
+        <div>
+          <label class="block mb-2 text-gray-700 font-medium text-sm">Costo mantenimiento</label>
+          <input type="number" [(ngModel)]="editingReservation.maintenanceCostPerDay" name="maintenanceCostPerDay" class="w-full border-2 border-gray-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition text-sm"/>
+        </div>
+        
+        <div>
+          <label class="block mb-2 text-gray-700 font-medium text-sm">Descuento %</label>
+          <input type="number" [(ngModel)]="editingReservation.discountPercentage" name="discountPercentage" class="w-full border-2 border-gray-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition text-sm"/>
+        </div>
+        
+         <div>
+       <label class="block mb-2 text-gray-700 font-medium text-sm">Promoción</label>
+          <select [(ngModel)]="editingReservation.promotionId" name="promotionId" class="w-full border-2 border-gray-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition text-sm">
+            <option [ngValue]="null">Sin Promoción</option> <option *ngFor="let promo of promotions" [ngValue]="promo.id">
+              {{ promo.name }}
+            </option>
+          </select>
+        </div>        
+
+        <div class="col-span-full flex justify-end gap-2 mt-4">
+          <button type="submit" class="px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition duration-150 text-sm">
+            Guardar
+          </button>
+          <button type="button" (click)="closeEditModal()" class="px-4 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300 transition duration-150 text-sm">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

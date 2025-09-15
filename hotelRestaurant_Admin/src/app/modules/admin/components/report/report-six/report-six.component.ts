@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import autoTable, { RowInput } from 'jspdf-autotable';
 import { RestaurantService } from '../../../../client/services/restaurant.service';
 import { OrderService } from '../../../../client/services/order.service';
 import { OrderDetailService } from '../../../../client/services/order-detail.service';
@@ -11,6 +11,8 @@ import { OrderDetail } from '../../../../client/models/order-detail.model';
 import { Customer } from '../../../models/customer.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DishService } from '../../../../client/services/dish.service';
+import { Dish } from '../../../../client/models/dish.model';
 
 @Component({
   selector: 'app-report-six',
@@ -25,11 +27,13 @@ export class ReportSixComponent implements OnInit {
   private orderService = inject(OrderService);
   private orderDetailService = inject(OrderDetailService);
   private customerService = inject(CustomerService);
+  private dishService = inject(DishService);
 
   restaurantes: Restaurant[] = [];
   orders: Order[] = [];
   orderDetails: OrderDetail[] = [];
   clientes: Customer[] = [];
+  platos: Dish[] = [];
 
   selectedRestaurantId: string | null = null;
 
@@ -42,22 +46,20 @@ export class ReportSixComponent implements OnInit {
     this.orderService.getAll().subscribe(o => this.orders = o);
     this.orderDetailService.getAll().subscribe(od => this.orderDetails = od);
     this.customerService.getAll().subscribe(c => this.clientes = c);
+    this.dishService.getAll().subscribe(d => this.platos = d);
   }
 
   generarReporte() {
-    // Filtrar órdenes si se selecciona restaurante
     let ordersFiltradas = this.orders;
     if (this.selectedRestaurantId) {
       ordersFiltradas = this.orders.filter(o => o.restaurantId === this.selectedRestaurantId);
     }
 
-    // Calcular ingresos por restaurante
     const ingresosMap: { [restaurantId: string]: number } = {};
     for (const o of ordersFiltradas) {
       ingresosMap[o.restaurantId] = (ingresosMap[o.restaurantId] || 0) + o.totalPrice;
     }
 
-    // Determinar restaurante con más ingresos
     let maxIngresos = 0;
     let restauranteIdMax: string | null = null;
     for (const [restaurantId, ingresos] of Object.entries(ingresosMap)) {
@@ -77,27 +79,49 @@ export class ReportSixComponent implements OnInit {
     return cliente ? cliente.fullName : customerId;
   }
 
-  descargarPDF() {
-    if (!this.restauranteMasPopular) return;
+  getDishesByOrder(orderId: string) {
+    const detalles = this.orderDetails.filter(od => od.orderId === orderId);
+    return detalles.map(od => {
+      const plato = this.platos.find(p => p.id === od.dishId);
+      return {
+        nombre: plato ? plato.name : od.dishId,
+        cantidad: od.quantity,
+        subtotal: od.subtotal
+      };
+    });
+  }
 
-    const doc = new jsPDF();
-    doc.text('Restaurante Más Popular', 14, 16);
-    doc.text(`Restaurante: ${this.restauranteMasPopular.name}`, 14, 24);
-    doc.text(`Total Ingresos: Q${this.totalIngresos.toFixed(2)}`, 14, 32);
+descargarPDF() {
+  if (!this.restauranteMasPopular) return;
 
-    const body = this.ordersRestaurante.map(o => [
-      o.id,
-      this.getCustomerName(o.customerId),
-      o.date,
-      `Q${o.totalPrice.toFixed(2)}`
+  const doc = new jsPDF();
+  const docAny = doc as any; // ⚡ decimos a TS que acepte cualquier cosa
+
+  doc.text('Restaurante Más Popular', 14, 16);
+  doc.text(`Restaurante: ${this.restauranteMasPopular.name}`, 14, 24);
+  doc.text(`Total Ingresos: Q${this.totalIngresos.toFixed(2)}`, 14, 32);
+
+  for (const o of this.ordersRestaurante) {
+    doc.text(
+      `Orden: ${o.id} | Cliente: ${this.getCustomerName(o.customerId)} | Fecha: ${o.date}`,
+      14,
+      docAny.lastAutoTable ? docAny.lastAutoTable.finalY + 10 : 40
+    );
+
+    const detalles = this.getDishesByOrder(o.id).map(d => [
+      d.nombre,
+      d.cantidad,
+      `Q${d.subtotal.toFixed(2)}`
     ]);
 
     autoTable(doc, {
-      head: [['ID Orden', 'Cliente', 'Fecha', 'Total']],
-      body: body,
-      startY: 40
+      head: [['Platillo', 'Cantidad', 'Subtotal']],
+      body: detalles as RowInput[],
+      startY: docAny.lastAutoTable ? docAny.lastAutoTable.finalY + 15 : 50
     });
-
-    doc.save('restaurante-mas-popular.pdf');
   }
+
+  doc.save('restaurante-mas-popular.pdf');
+}
+
 }

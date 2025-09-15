@@ -48,6 +48,27 @@
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ o.date | date }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">{{ o.totalPrice | currency:'GTQ':'symbol':'1.2-2' }}</td>
           </tr>
+           <!-- Subtabla de platillos -->
+      <tr *ngFor="let o of ordersRestaurante">
+        <td colspan="4" class="px-6 py-2 bg-gray-50">
+          <table class="w-full text-sm border rounded">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="px-4 py-2 text-left">Platillo</th>
+                <th class="px-4 py-2 text-left">Cantidad</th>
+                <th class="px-4 py-2 text-left">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let d of getDishesByOrder(o.id)">
+                <td class="px-4 py-1">{{ d.nombre }}</td>
+                <td class="px-4 py-1">{{ d.cantidad }}</td>
+                <td class="px-4 py-1">{{ d.subtotal | currency:'GTQ' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
         </tbody>
       </table>
     </div>

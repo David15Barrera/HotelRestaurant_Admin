@@ -11,6 +11,7 @@ import { CustomerService } from '../../../services/customer.service';
 import { catchError, forkJoin, map, of, switchMap } from 'rxjs';
 import { PromotionService } from '../../../../client/services/promotiones.service';
 import { Promotion } from '../../../../client/models/promotiones.model';
+import { BillService } from '../../../services/bill.service';
 @Component({
   selector: 'app-reservas-admin',
   standalone: true,
@@ -30,7 +31,8 @@ editingReservation: Reservation | null = null;
     private roomService: RoomService,
     private hotelService: HotelService,
     private customerService: CustomerService,
-    private promotionService: PromotionService 
+    private promotionService: PromotionService,
+    private billService: BillService 
   ) {}
 
 openEditModal(reservation: Reservation) {
@@ -183,5 +185,59 @@ getCustomerName(customerId: string): string {
     }
     const promotion = this.promotions.find(p => p.id === promotionId);
     return promotion ? promotion.name : 'Promoción Desconocida';
+  }
+
+
+  //Metodo de Pago
+   pagarReserva(reservation: Reservation, metodo: 'EFECTIVO' | 'TARJETA') {
+    const total = this.calcularTotal(reservation);
+
+    // 1. Crear factura
+    const bill = {
+      reservationId: reservation.id,
+      amount: total,
+      paymentDate: new Date().toISOString(),
+      paymentMethod: metodo
+    };
+
+    this.billService.create(bill).pipe(
+      switchMap((createdBill) =>
+        // 2. Actualizar cliente con 10% del total
+        this.customerService.getById(reservation.customerId).pipe(
+          switchMap((customer) => {
+            const updatedCustomer = {
+              ...customer,
+              loyaltyPoints: (customer.loyaltyPoints || 0) + Math.floor(total * 0.1)
+            };
+            return this.customerService.update(customer.id!, updatedCustomer);
+          }),
+          map(() => createdBill)
+        )
+      ),
+      switchMap(() =>
+        // 3. Cambiar estado de la reserva a "pagado"
+          this.reservationService.updateReservation(reservation.id!, {
+            customerId: reservation.customerId,
+            roomId: reservation.roomId,
+            startDate: reservation.startDate,
+            endDate: reservation.endDate,
+            pricePerDay: reservation.pricePerDay,
+            maintenanceCostPerDay: reservation.maintenanceCostPerDay,
+            discountPercentage: reservation.discountPercentage,
+            promotionId: reservation.promotionId,
+            state: 'PAGADA' // 👈 ahora sí se marca como pagado
+          })
+
+      )
+    ).subscribe({
+      next: () => {
+        alert('Reserva pagada y puntos asignados correctamente');
+        this.loadData();
+      },
+      error: (err) => {
+        console.error('Error en el pago:', err);
+        alert('No se pudo completar el pago ❌');
+      }
+    });
   }
 }

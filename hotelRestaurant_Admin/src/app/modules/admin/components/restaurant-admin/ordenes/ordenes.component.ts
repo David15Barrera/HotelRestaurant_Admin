@@ -6,9 +6,10 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { Router } from '@angular/router';
 import { RestaurantService } from '../../../../client/services/restaurant.service';
 import { Restaurant } from '../../../../client/models/restaurant.model';
-import { finalize } from 'rxjs';
+import { finalize, map, switchMap } from 'rxjs';
 import { CustomerService } from '../../../services/customer.service';
 import { Customer } from '../../../models/customer.model';
+import { BillService } from '../../../services/bill.service';
 @Component({
   selector: 'app-ordenes',
   standalone: true,
@@ -26,10 +27,14 @@ export class OrdenesComponent implements OnInit {
   isEditing = false;
   selectedOrder: Partial<Order> = {};
 
+  filterStatus: string = '';
+  filterCustomer: string = '';
 
   constructor(
     private orderService: OrderService,
-    private restaurantService: RestaurantService
+    private restaurantService: RestaurantService,
+    private billService: BillService,
+    private customerService: CustomerService
   ) {}
 
   ngOnInit(): void {
@@ -151,6 +156,64 @@ applyDiscount() {
   const total = Number(this.selectedOrder.totalPrice) || 0;
   const discount = Number(this.selectedOrder.discountPercentage) || 0;
   this.selectedOrder.totalPrice = total - (total * discount / 100);
+}
+
+ pagarOrden(order: Order, metodo: 'EFECTIVO' | 'TARJETA') {
+    const total = order.totalPrice;
+
+    // 1. Crear factura
+    const bill = {
+      orderId: order.id,
+      amount: total,
+      paymentDate: new Date().toISOString(),
+      paymentMethod: metodo
+    };
+
+    this.billService.create(bill).pipe(
+      switchMap((createdBill) =>
+        // 2. Actualizar cliente con puntos (10% del total)
+        this.customerService.getById(order.customerId).pipe(
+          switchMap((customer) => {
+            const updatedCustomer = {
+              ...customer,
+              loyaltyPoints: (customer.loyaltyPoints || 0) + Math.floor(total * 0.1)
+            };
+            return this.customerService.update(customer.id!, updatedCustomer);
+          }),
+          map(() => createdBill)
+        )
+      ),
+      switchMap(() =>
+        // 3. Cambiar estado de la orden a "PAGADO"
+        this.orderService.update(order.id, {
+          customerId: order.customerId,
+          restaurantId: order.restaurantId,
+          totalPrice: order.totalPrice,
+          discountPercentage: order.discountPercentage,
+          promotionId: order.promotionId,
+          status: 'PAGADA'
+        })
+      )
+    ).subscribe({
+      next: () => {
+        alert('Orden pagada y puntos asignados correctamente ✅');
+        this.loadOrders();
+      },
+      error: (err) => {
+        console.error('Error en el pago de la orden:', err);
+        alert('No se pudo completar el pago ❌');
+      }
+    });
+  }
+
+get filteredOrders() {
+  return this.orders.filter(o => {
+    const matchesStatus = this.filterStatus ? o.status === this.filterStatus : true;
+    const matchesCustomer = this.filterCustomer
+      ? o.customer?.fullName?.toLowerCase().includes(this.filterCustomer.toLowerCase())
+      : true;
+    return matchesStatus && matchesCustomer;
+  });
 }
 
 }

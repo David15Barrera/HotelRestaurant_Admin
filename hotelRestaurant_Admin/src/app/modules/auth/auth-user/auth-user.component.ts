@@ -41,14 +41,16 @@ formBuilder: FormBuilder = inject(FormBuilder)
 
 if (resp) {
   switch (resp.roleName) {
-    case "ADMIN":
-    case "EMPLOYEE":
+    case "CUSTOMER":
      alert('No puedes ingresar a esta plataforma. Acceso solo para clientes.');
      this.router.navigate(['/session/login']); 
       break;
-        case "CUSTOMER":
+        case "ADMIN":
           this.router.navigate(['client/inicio']);
           break;
+        case "EMPLOYEE":
+           this.router.navigate(['client/inicio']);
+        break 
         default:
           alert('Rol de usuario no reconocido. Por favor, contacta a soporte.');
           this.router.navigate(['/session/login']);

@@ -1,0 +1,60 @@
+<div class="p-6 bg-gray-50 min-h-screen">
+  <h2 class="text-2xl font-bold mb-4">Reporte de Ganancias</h2>
+
+  <div class="mb-4 flex flex-col sm:flex-row gap-4">
+  <!-- Selección de Hotel -->
+<select [(ngModel)]="selectedHotelId" (change)="onHotelChange()" [disabled]="selectedRestaurantId ? true : false" class="border p-2 rounded">
+    <option value="">Todos los hoteles</option>
+    <option *ngFor="let h of hoteles" [value]="h.id">{{ h.name }}</option>
+  </select>
+
+  <!-- Selección de Restaurante -->
+<select [(ngModel)]="selectedRestaurantId" (change)="onRestaurantChange()" [disabled]="!!selectedHotelId" class="border p-2 rounded">
+    <option value="">Todos los restaurantes</option>
+    <option *ngFor="let r of restaurantesFiltrados" [value]="r.id">{{ r.name }}</option>
+  </select>
+
+  <!-- Fechas -->
+  <input type="date" [(ngModel)]="fechaInicio" class="border p-2 rounded" />
+  <input type="date" [(ngModel)]="fechaFin" class="border p-2 rounded" />
+
+  <button (click)="generarReporte()" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+    Generar
+  </button>
+  <button (click)="descargarPDF()" class="bg-green-500 text-white p-2 rounded hover:bg-green-600">
+    Descargar PDF
+  </button>
+</div>
+
+
+  <div *ngIf="billsFiltradas.length">
+    <p class="font-semibold mb-2">Total Ingresos: Q{{ totalIngresos.toFixed(2) }}</p>
+    <p class="font-semibold mb-2">Total Costos: Q{{ totalCostos.toFixed(2) }}</p>
+    <p class="font-semibold mb-4">Ganancia Neta: Q{{ (totalIngresos - totalCostos).toFixed(2) }}</p>
+
+    <table class="min-w-full bg-white border rounded mb-4">
+      <thead>
+        <tr>
+          <th class="border px-4 py-2">ID Pago</th>
+          <th class="border px-4 py-2">Monto</th>
+          <th class="border px-4 py-2">Fecha</th>
+          <th class="border px-4 py-2">Método</th>
+          <th class="border px-4 py-2">Tipo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let b of billsFiltradas">
+          <td class="border px-4 py-2">{{ b.id }}</td>
+          <td class="border px-4 py-2">Q{{ b.amount.toFixed(2) }}</td>
+          <td class="border px-4 py-2">{{ b.paymentDate | date }}</td>
+          <td class="border px-4 py-2">{{ b.paymentMethod }}</td>
+          <td class="border px-4 py-2">{{ b.reservationId ? 'Costo' : 'Ingreso' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="billsFiltradas.length === 0" class="mt-4 text-gray-500">
+    No se encontraron registros.
+  </div>
+</div>

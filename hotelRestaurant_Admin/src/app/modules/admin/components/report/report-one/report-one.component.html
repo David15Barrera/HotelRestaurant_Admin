@@ -1,0 +1,54 @@
+<div class="p-6 bg-gray-50 min-h-screen">
+  <h2 class="text-2xl font-bold mb-4">Reporte de Ingresos por Establecimiento</h2>
+
+  <div class="mb-4 flex flex-col sm:flex-row gap-4">
+    <!-- Selección de Hotel -->
+    <select [(ngModel)]="selectedHotelId" (change)="filtrarRestaurantes()" class="border p-2 rounded">
+      <option value="" disabled selected>Seleccione un hotel</option>
+      <option *ngFor="let h of hoteles" [value]="h.id">{{ h.name }}</option>
+    </select>
+
+    <!-- Selección de Restaurante -->
+    <select [(ngModel)]="selectedRestaurantId" class="border p-2 rounded">
+      <option value="" disabled selected>Seleccione un restaurante (opcional)</option>
+      <option *ngFor="let r of restaurantesFiltrados" [value]="r.id">{{ r.name }}</option>
+    </select>
+
+    <input type="date" [(ngModel)]="fechaInicio" class="border p-2 rounded" />
+    <input type="date" [(ngModel)]="fechaFin" class="border p-2 rounded" />
+
+    <button (click)="generarReporte()" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+      Generar
+    </button>
+    <button (click)="descargarPDF()" class="bg-green-500 text-white p-2 rounded hover:bg-green-600">
+        Descargar PDF
+    </button>
+  </div>
+
+  <div *ngIf="billsFiltradas.length">
+    <p class="font-semibold mb-2">Total Ingresos: Q{{ totalIngresos.toFixed(2) }}</p>
+
+    <table class="min-w-full bg-white border rounded">
+      <thead>
+        <tr>
+          <th class="border px-4 py-2">ID Pago</th>
+          <th class="border px-4 py-2">Monto</th>
+          <th class="border px-4 py-2">Fecha</th>
+          <th class="border px-4 py-2">Método</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let bill of billsFiltradas">
+          <td class="border px-4 py-2">{{ bill.id }}</td>
+          <td class="border px-4 py-2">{{ bill.amount }}</td>
+          <td class="border px-4 py-2">{{ bill.paymentDate | date }}</td>
+          <td class="border px-4 py-2">{{ bill.paymentMethod }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="billsFiltradas.length === 0" class="mt-4 text-gray-500">
+    No se encontraron registros.
+  </div>
+</div>

@@ -1,0 +1,55 @@
+<div class="p-6 bg-gray-50 min-h-screen">
+  <h2 class="text-2xl font-bold mb-4">Reporte de Empleados por Establecimiento</h2>
+
+  <div class="mb-4 flex flex-col sm:flex-row gap-4">
+    <!-- Selección de Hotel -->
+    <select [(ngModel)]="selectedHotelId" (change)="filtrarRestaurantes()" class="border p-2 rounded">
+      <option value="">Todos los hoteles</option>
+      <option *ngFor="let h of hoteles" [value]="h.id">{{ h.name }}</option>
+    </select>
+
+    <!-- Selección de Restaurante -->
+    <select [(ngModel)]="selectedRestaurantId" class="border p-2 rounded">
+      <option value="">Todos los restaurantes</option>
+      <option *ngFor="let r of restaurantesFiltrados" [value]="r.id">{{ r.name }}</option>
+    </select>
+
+    <button (click)="generarReporte()" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+      Generar
+    </button>
+    <button (click)="descargarPDF()" class="bg-green-500 text-white p-2 rounded hover:bg-green-600">
+      Descargar PDF
+    </button>
+  </div>
+
+  <div *ngIf="empleadosFiltrados.length">
+    <table class="min-w-full bg-white border rounded">
+      <thead>
+        <tr>
+          <th class="border px-4 py-2">Nombre</th>
+          <th class="border px-4 py-2">CUI</th>
+          <th class="border px-4 py-2">Teléfono</th>
+          <th class="border px-4 py-2">Email</th>
+          <th class="border px-4 py-2">Cargo</th>
+          <th class="border px-4 py-2">Salario</th>
+          <th class="border px-4 py-2">Área</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let e of empleadosFiltrados">
+          <td class="border px-4 py-2">{{ e.fullName }}</td>
+          <td class="border px-4 py-2">{{ e.cui }}</td>
+          <td class="border px-4 py-2">{{ e.phone }}</td>
+          <td class="border px-4 py-2">{{ e.email }}</td>
+          <td class="border px-4 py-2">{{ e.jobPosition }}</td>
+          <td class="border px-4 py-2">Q{{ e.salary.toFixed(2) }}</td>
+          <td class="border px-4 py-2">{{ e.jobArea || '-' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="empleadosFiltrados.length === 0" class="mt-4 text-gray-500">
+    No se encontraron registros.
+  </div>
+</div>

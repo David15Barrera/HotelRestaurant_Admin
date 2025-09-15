@@ -106,6 +106,64 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () => import('./components/promotions-admin/promotions-admin.component').then(
           (m) => m.PromotionsAdminComponent       
         )
+      },
+      {
+        path: 'reportes', // La URL será /admin/reportes
+        children: [
+          {
+            path: '', // La URL /admin/reportes mostrará el menú de reportes
+            loadComponent: () =>
+              import('./components/reportes/reportes.component').then(
+                (m) => m.ReportesComponent
+              ),
+          },
+          {
+            path: 'ingresos-establecimiento', // La URL será /admin/reportes/ingresos-establecimiento
+            loadComponent: () =>
+              import('./components/report/report-one/report-one.component').then(
+                (m) => m.ReportOneComponent
+              ),
+          },
+          {
+            path: 'alojamientos-consumos-cliente',
+            loadComponent: () =>
+              import('./components/report/report-two/report-two.component').then(
+                (m) => m.ReportTwoComponent
+              ),
+          },
+          {
+            path: 'empleados-establecimiento',
+            loadComponent: () =>
+              import('./components/report/report-three/report-three.component').then(
+                (m) => m.ReportThreeComponent
+              ),
+          },
+          {
+            path: 'ganancias',
+            loadComponent: () =>
+              import('./components/report/report-four/report-four.component').then(
+                (m) => m.ReportFourComponent
+              ),
+          },
+          {
+            path: 'habitacion-popular',
+            loadComponent: () =>
+              import('./components/report/report-five/report-five.component').then(
+                (m) => m.ReportFiveComponent
+              ),
+          },
+          {
+            path: 'restaurante-popular',
+            loadComponent: () =>
+              import('./components/report/report-six/report-six.component').then(
+                (m) => m.ReportSixComponent
+              ),
+          },
+        ],
+      },
+      {
+        path: '**',
+        redirectTo: 'inicio'
       }
     ],
   },

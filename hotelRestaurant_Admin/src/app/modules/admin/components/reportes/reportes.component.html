@@ -1,1 +1,81 @@
-<p>reportes works!</p>
+<div class="p-8 bg-gray-100 min-h-screen">
+  <h2 class="text-3xl font-bold mb-8 text-center text-gray-800">
+    Menú de Reportes
+  </h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    <div
+      class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl cursor-pointer transform hover:-translate-y-2 transition-all duration-300"
+      (click)="goToReporte('ingresos-establecimiento')">
+      <div class="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-blue-100 text-blue-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V4m0 8v8m0-8v.01M12 12v.01" />
+        </svg>
+      </div>
+      <h3 class="text-xl font-semibold mb-2 text-gray-800">Ingresos por Establecimiento</h3>
+      <p class="text-gray-600 text-sm">Total y listado de todos los ingresos de un establecimiento en un rango de fechas.</p>
+    </div>
+
+    <div
+      class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl cursor-pointer transform hover:-translate-y-2 transition-all duration-300"
+      (click)="goToReporte('alojamientos-consumos-cliente')">
+      <div class="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-teal-100 text-teal-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+      </div>
+      <h3 class="text-xl font-semibold mb-2 text-gray-800">Alojamientos y Consumos Cliente</h3>
+      <p class="text-gray-600 text-sm">Total y listado de alojamientos y consumos de un cliente, opcionalmente por establecimiento.</p>
+    </div>
+
+    <div
+      class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl cursor-pointer transform hover:-translate-y-2 transition-all duration-300"
+      (click)="goToReporte('empleados-establecimiento')">
+      <div class="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-orange-100 text-orange-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h-4v-4h-4v4h-4a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v4a2 2 0 01-2 2h-4v4h4a2 2 0 012 2v4a2 2 0 012-2h4v-4h4a2 2 0 012 2v2a2 2 0 01-2 2z" />
+        </svg>
+      </div>
+      <h3 class="text-xl font-semibold mb-2 text-gray-800">Detalles de Empleados</h3>
+      <p class="text-gray-600 text-sm">Listado de detalles de empleados de algún establecimiento.</p>
+    </div>
+
+    <div
+      class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl cursor-pointer transform hover:-translate-y-2 transition-all duration-300"
+      (click)="goToReporte('ganancias')">
+      <div class="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-pink-100 text-pink-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <h3 class="text-xl font-semibold mb-2 text-gray-800">Ganancias</h3>
+      <p class="text-gray-600 text-sm">Reporte de ganancias, incluyendo listado de costos e ingresos.</p>
+    </div>
+
+    <div
+      class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl cursor-pointer transform hover:-translate-y-2 transition-all duration-300"
+      (click)="goToReporte('habitacion-popular')">
+      <div class="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-purple-100 text-purple-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        </svg>
+      </div>
+      <h3 class="text-xl font-semibold mb-2 text-gray-800">Habitación Más Popular</h3>
+      <p class="text-gray-600 text-sm">La habitación con más alojamientos, listado completo, opcionalmente por hotel.</p>
+    </div>
+
+    <div
+      class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl cursor-pointer transform hover:-translate-y-2 transition-all duration-300"
+      (click)="goToReporte('restaurante-popular')">
+      <div class="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-red-100 text-red-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 .895 3 2s-1.343 2-3 2V8zM12 14c-1.657 0-3-.895-3-2s1.343-2 3-2v4z" />
+          <path d="M19 19H5c-1.104 0-2-.896-2-2V7c0-1.104.896-2 2-2h14c1.104 0 2 .896 2 2v10c0 1.104-.896 2-2 2z" />
+        </svg>
+      </div>
+      <h3 class="text-xl font-semibold mb-2 text-gray-800">Restaurante Más Popular</h3>
+      <p class="text-gray-600 text-sm">El restaurante con más ingresos, listado completo, opcionalmente por restaurante.</p>
+    </div>
+  </div>
+</div>
